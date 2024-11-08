@@ -33,16 +33,24 @@ namespace WypelnianieSiatkiTrojkatow
             {
                 for (int v = 0; v <= N; v++)
                 {
-                    Vector3 pt = new Vector3(0, 0, 0);
+                    Vector3 pt = new Vector3(0, 0, 0),
+                        pu = new Vector3(0, 0, 0),
+                        pv = new Vector3(0, 0, 0);
                     for (int j = 0; j < 4; j++)
                     {
                         for (int i = 0; i < 4; i++)
                         {
                             Vertex V = ControlVertexes[j, i];
                             pt += V.Pbr * (float)(MathUtil.B(j, 3, u * step) * MathUtil.B(i, 3, v * step));
+                            if (j < 3)
+                                pu += (ControlVertexes[j + 1, i].Pbr - V.Pbr) * (float)(MathUtil.B(j, 2, u * step) * MathUtil.B(i, 3, v * step));
+
+                            if (i < 3)
+                                pv += (ControlVertexes[j, i + 1].Pbr - V.Pbr) * (float)(MathUtil.B(j, 3, u * step) * MathUtil.B(i, 2, v * step));
+
                         }
                     }
-                    PrecisionVertexes[u, v] = new Vertex(pt, u, v);
+                    PrecisionVertexes[u, v] = new Vertex(pt, 3*pu, 3*pv, u, v);
                 }
             }
 

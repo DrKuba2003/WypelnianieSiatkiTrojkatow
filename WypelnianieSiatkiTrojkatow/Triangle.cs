@@ -35,9 +35,9 @@ namespace WypelnianieSiatkiTrojkatow
             return (min, max);
         }
 
-        public ETClass GetET()
+        public EdgesTable GetET()
         {
-            ETClass ET = new();
+            EdgesTable ET = new();
 
             ET.Add(GetEdgeET(V1, V2));
             ET.Add(GetEdgeET(V2, V3));
@@ -51,6 +51,7 @@ namespace WypelnianieSiatkiTrojkatow
             // private so no need
             //if ((v1 != V1 && v1 != V2 && v1 != V3) ||
             //    (v2 != V1 && v2 != V2 && v2 != V3)) return null;
+
             if (Math.Abs(v1.Y - v2.Y) < 1) return null;
 
             return v1.Y > v2.Y ?

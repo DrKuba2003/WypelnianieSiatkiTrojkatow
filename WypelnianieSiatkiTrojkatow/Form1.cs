@@ -63,14 +63,14 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void FillPolygon(Graphics g, IPolygon poly)
         {
-            ETClass ET = poly.GetET();
+            EdgesTable ET = poly.GetET();
             if (ET.IsEmpty()) return;
 
             int y = ET.minY;
             EdgeList AET = new EdgeList();
             do
             {
-                if (y <= ET.maxY)
+                if (y <= ET.maxY && ET.ET.ContainsKey(y))
                 {
                     AET.AddAtEnd(ET[y]);
                     ET[y].Clear();

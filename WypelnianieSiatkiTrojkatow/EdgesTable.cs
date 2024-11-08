@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace WypelnianieSiatkiTrojkatow
 {
-    public class ETClass
+    public class EdgesTable
     {
         public Dictionary<int, EdgeList> ET { get; init; }
         public int minY { get; private set; }
         public int maxY { get; private set; }
 
-        public ETClass()
+        public EdgesTable()
         {
             ET = new Dictionary<int, EdgeList>();
             minY = int.MaxValue;
@@ -28,19 +28,14 @@ namespace WypelnianieSiatkiTrojkatow
             {
                 minY = min;
                 maxY = min;
-                ET[min] = new EdgeList();
             }
             else if (min < minY)
-            {
-                for (int i = min; i < minY; i++) ET[i] = new EdgeList();
                 minY = min;
-            }
             else if (min > maxY)
-            {
-                for (int i = maxY + 1; i <= min; i++) ET[i] = new EdgeList();
                 maxY = min;
-            }
 
+            if (!ET.ContainsKey(min))
+                ET[min] = new EdgeList();
             ET[min].AddAtEnd(e);
         }
 

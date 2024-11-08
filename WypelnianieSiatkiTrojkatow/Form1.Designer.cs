@@ -44,10 +44,28 @@
             pointFileBtn = new Button();
             label4 = new Label();
             punktyPathValue = new Label();
+            kdTrack = new TrackBar();
+            label5 = new Label();
+            kdValue = new Label();
+            label6 = new Label();
+            ksTrack = new TrackBar();
+            ksValue = new Label();
+            label7 = new Label();
+            mValue = new Label();
+            mTrack = new TrackBar();
+            label8 = new Label();
+            label9 = new Label();
+            zTrack = new TrackBar();
+            zValue = new Label();
+            PauseResumeBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kdTrack).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ksTrack).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)mTrack).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)zTrack).BeginInit();
             SuspendLayout();
             // 
             // Canvas
@@ -56,7 +74,7 @@
             Canvas.BackColor = SystemColors.ControlLightLight;
             Canvas.Location = new Point(207, 1);
             Canvas.Name = "Canvas";
-            Canvas.Size = new Size(875, 703);
+            Canvas.Size = new Size(875, 753);
             Canvas.TabIndex = 0;
             Canvas.TabStop = false;
             // 
@@ -123,7 +141,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(12, 189);
+            label2.Location = new Point(12, 176);
             label2.Name = "label2";
             label2.Size = new Size(104, 20);
             label2.TabIndex = 6;
@@ -131,7 +149,7 @@
             // 
             // alfaAngleTrack
             // 
-            alfaAngleTrack.Location = new Point(12, 212);
+            alfaAngleTrack.Location = new Point(11, 199);
             alfaAngleTrack.Maximum = 45;
             alfaAngleTrack.Minimum = -45;
             alfaAngleTrack.Name = "alfaAngleTrack";
@@ -143,7 +161,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(12, 271);
+            label3.Location = new Point(11, 244);
             label3.Name = "label3";
             label3.Size = new Size(109, 20);
             label3.TabIndex = 8;
@@ -151,7 +169,7 @@
             // 
             // betaAngleTrack
             // 
-            betaAngleTrack.Location = new Point(12, 294);
+            betaAngleTrack.Location = new Point(12, 267);
             betaAngleTrack.Maximum = 80;
             betaAngleTrack.Name = "betaAngleTrack";
             betaAngleTrack.Size = new Size(180, 56);
@@ -162,7 +180,7 @@
             // netPrecValue
             // 
             netPrecValue.AutoSize = true;
-            netPrecValue.Location = new Point(94, 166);
+            netPrecValue.Location = new Point(175, 107);
             netPrecValue.Name = "netPrecValue";
             netPrecValue.Size = new Size(17, 20);
             netPrecValue.TabIndex = 10;
@@ -171,7 +189,7 @@
             // alfaValue
             // 
             alfaValue.AutoSize = true;
-            alfaValue.Location = new Point(94, 248);
+            alfaValue.Location = new Point(174, 176);
             alfaValue.Name = "alfaValue";
             alfaValue.Size = new Size(17, 20);
             alfaValue.TabIndex = 11;
@@ -180,7 +198,7 @@
             // betaValue
             // 
             betaValue.AutoSize = true;
-            betaValue.Location = new Point(93, 330);
+            betaValue.Location = new Point(173, 244);
             betaValue.Name = "betaValue";
             betaValue.Size = new Size(18, 20);
             betaValue.TabIndex = 12;
@@ -188,7 +206,7 @@
             // 
             // pointFileBtn
             // 
-            pointFileBtn.Location = new Point(31, 662);
+            pointFileBtn.Location = new Point(32, 712);
             pointFileBtn.Name = "pointFileBtn";
             pointFileBtn.Size = new Size(148, 29);
             pointFileBtn.TabIndex = 13;
@@ -200,7 +218,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label4.Location = new Point(6, 605);
+            label4.Location = new Point(8, 664);
             label4.Name = "label4";
             label4.Size = new Size(115, 20);
             label4.TabIndex = 14;
@@ -209,7 +227,7 @@
             // punktyPathValue
             // 
             punktyPathValue.AutoEllipsis = true;
-            punktyPathValue.Location = new Point(12, 625);
+            punktyPathValue.Location = new Point(12, 684);
             punktyPathValue.Name = "punktyPathValue";
             punktyPathValue.RightToLeft = RightToLeft.No;
             punktyPathValue.Size = new Size(189, 25);
@@ -217,11 +235,148 @@
             punktyPathValue.Text = "Punkty\\punkty.txt";
             punktyPathValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // kdTrack
+            // 
+            kdTrack.Location = new Point(1088, 32);
+            kdTrack.Name = "kdTrack";
+            kdTrack.Size = new Size(207, 56);
+            kdTrack.TabIndex = 16;
+            kdTrack.TickStyle = TickStyle.None;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(1088, 9);
+            label5.Name = "label5";
+            label5.Size = new Size(25, 20);
+            label5.TabIndex = 17;
+            label5.Text = "kd";
+            // 
+            // kdValue
+            // 
+            kdValue.AutoSize = true;
+            kdValue.Location = new Point(1270, 12);
+            kdValue.Name = "kdValue";
+            kdValue.Size = new Size(17, 20);
+            kdValue.TabIndex = 18;
+            kdValue.Text = "0";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(1088, 76);
+            label6.Name = "label6";
+            label6.Size = new Size(22, 20);
+            label6.TabIndex = 19;
+            label6.Text = "ks";
+            // 
+            // ksTrack
+            // 
+            ksTrack.Location = new Point(1088, 99);
+            ksTrack.Name = "ksTrack";
+            ksTrack.Size = new Size(199, 56);
+            ksTrack.TabIndex = 20;
+            ksTrack.TickStyle = TickStyle.None;
+            // 
+            // ksValue
+            // 
+            ksValue.AutoSize = true;
+            ksValue.Location = new Point(1270, 76);
+            ksValue.Name = "ksValue";
+            ksValue.Size = new Size(17, 20);
+            ksValue.TabIndex = 21;
+            ksValue.Text = "0";
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(1088, 144);
+            label7.Name = "label7";
+            label7.Size = new Size(22, 20);
+            label7.TabIndex = 22;
+            label7.Text = "m";
+            // 
+            // mValue
+            // 
+            mValue.AutoSize = true;
+            mValue.Location = new Point(1270, 144);
+            mValue.Name = "mValue";
+            mValue.Size = new Size(17, 20);
+            mValue.TabIndex = 23;
+            mValue.Text = "0";
+            // 
+            // mTrack
+            // 
+            mTrack.Location = new Point(1088, 167);
+            mTrack.Name = "mTrack";
+            mTrack.Size = new Size(199, 56);
+            mTrack.TabIndex = 24;
+            mTrack.TickStyle = TickStyle.None;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            label8.Location = new Point(1088, 203);
+            label8.Name = "label8";
+            label8.Size = new Size(83, 20);
+            label8.TabIndex = 25;
+            label8.Text = "Animation";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(1097, 226);
+            label9.Name = "label9";
+            label9.Size = new Size(16, 20);
+            label9.TabIndex = 26;
+            label9.Text = "z";
+            // 
+            // zTrack
+            // 
+            zTrack.Location = new Point(1097, 249);
+            zTrack.Name = "zTrack";
+            zTrack.Size = new Size(190, 56);
+            zTrack.TabIndex = 27;
+            zTrack.TickStyle = TickStyle.None;
+            // 
+            // zValue
+            // 
+            zValue.AutoSize = true;
+            zValue.Location = new Point(1270, 226);
+            zValue.Name = "zValue";
+            zValue.Size = new Size(17, 20);
+            zValue.TabIndex = 28;
+            zValue.Text = "0";
+            // 
+            // PauseResumeBtn
+            // 
+            PauseResumeBtn.Location = new Point(1152, 276);
+            PauseResumeBtn.Name = "PauseResumeBtn";
+            PauseResumeBtn.Size = new Size(94, 29);
+            PauseResumeBtn.TabIndex = 29;
+            PauseResumeBtn.Text = "Pause";
+            PauseResumeBtn.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1082, 703);
+            ClientSize = new Size(1307, 753);
+            Controls.Add(PauseResumeBtn);
+            Controls.Add(zValue);
+            Controls.Add(zTrack);
+            Controls.Add(label9);
+            Controls.Add(label8);
+            Controls.Add(mTrack);
+            Controls.Add(mValue);
+            Controls.Add(label7);
+            Controls.Add(ksValue);
+            Controls.Add(ksTrack);
+            Controls.Add(label6);
+            Controls.Add(kdValue);
+            Controls.Add(label5);
+            Controls.Add(kdTrack);
             Controls.Add(punktyPathValue);
             Controls.Add(label4);
             Controls.Add(pointFileBtn);
@@ -247,6 +402,10 @@
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kdTrack).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ksTrack).EndInit();
+            ((System.ComponentModel.ISupportInitialize)mTrack).EndInit();
+            ((System.ComponentModel.ISupportInitialize)zTrack).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -269,5 +428,19 @@
         private Button pointFileBtn;
         private Label label4;
         private Label punktyPathValue;
+        private TrackBar kdTrack;
+        private Label label5;
+        private Label kdValue;
+        private Label label6;
+        private TrackBar ksTrack;
+        private Label ksValue;
+        private Label label7;
+        private Label mValue;
+        private TrackBar mTrack;
+        private Label label8;
+        private Label label9;
+        private TrackBar zTrack;
+        private Label zValue;
+        private Button PauseResumeBtn;
     }
 }

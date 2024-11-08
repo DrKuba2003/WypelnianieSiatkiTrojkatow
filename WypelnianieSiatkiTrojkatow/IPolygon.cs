@@ -8,6 +8,6 @@ namespace WypelnianieSiatkiTrojkatow
 {
     public interface IPolygon
     {
-        public ETClass GetET();
+        public EdgesTable GetET();
     }
 }

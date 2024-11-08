@@ -40,6 +40,9 @@ namespace WypelnianieSiatkiTrojkatow
                 g.ScaleTransform(1, -1);
                 g.TranslateTransform(Canvas.Width / 2, -Canvas.Height / 2);
 
+                if (drawFillingCheck.Checked)
+                    FillTriangles(g);
+
                 if (drawTriangleNetCheck.Checked)
                     DrawNet(g);
 
@@ -52,23 +55,74 @@ namespace WypelnianieSiatkiTrojkatow
             Canvas.Refresh();
         }
 
+        public void FillTriangles(Graphics g)
+        {
+            foreach (var t in model.net)
+                FillPolygon(g, t);
+        }
+
+        public void FillPolygon(Graphics g, IPolygon poly)
+        {
+            ETClass ET = poly.GetET();
+            if (ET.IsEmpty()) return;
+
+            int y = ET.minY;
+            EdgeList AET = new EdgeList();
+            do
+            {
+                if (y <= ET.maxY)
+                {
+                    AET.AddAtEnd(ET[y]);
+                    ET[y].Clear();
+                }
+                AET.QSort();
+
+                Edge? e = AET.head;
+                while (e is not null && e.next is not null)
+                {
+                    g.DrawLine(Pens.Magenta,
+                        new Point((int)e.x, y), new Point((int)e.next.x, y));
+                    e = e.next.next;
+                }
+
+                e = AET.head;
+                while (e is not null)
+                {
+                    if (e.ymax == y ||
+                        (!ET[ET.maxY].IsEmpty() && e.ymax == y + 1)) // TODO investigate
+                        AET.Delete(e);
+                    else
+                        e.x += e.delta;
+
+                    e = e.next;
+                }
+
+                y++;
+            } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
+
+            if (poly is Triangle)
+                DrawTriangle(g, (Triangle)poly, Pens.Magenta);
+        }
+
         private void DrawNet(Graphics g)
         {
-            // TODO moze zoptymalizowac??
             foreach (var t in model.net)
-            {
-                g.DrawLine(Pens.Magenta,
+                DrawTriangle(g, t, Pens.DarkMagenta);
+        }
+
+        public void DrawTriangle(Graphics g, Triangle t, Pen p)
+        {
+            g.DrawLine(p,
                     new Point((int)t.V1.X, (int)t.V1.Y),
                     new Point((int)t.V2.X, (int)t.V2.Y));
 
-                g.DrawLine(Pens.Magenta,
-                    new Point((int)t.V1.X, (int)t.V1.Y),
-                    new Point((int)t.V3.X, (int)t.V3.Y));
+            g.DrawLine(p,
+                new Point((int)t.V1.X, (int)t.V1.Y),
+                new Point((int)t.V3.X, (int)t.V3.Y));
 
-                g.DrawLine(Pens.Magenta,
-                    new Point((int)t.V3.X, (int)t.V3.Y),
-                    new Point((int)t.V2.X, (int)t.V2.Y));
-            }
+            g.DrawLine(p,
+                new Point((int)t.V3.X, (int)t.V3.Y),
+                new Point((int)t.V2.X, (int)t.V2.Y));
         }
 
         private void DrawControlPts(Graphics g)

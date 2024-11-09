@@ -76,6 +76,9 @@ namespace WypelnianieSiatkiTrojkatow
         }
 
         public static double GetLength(Vertex v1, Vertex v2)
+            => GetLength(v1.Par, v2.Par);
+
+        public static double GetLength(Vector3 v1, Vector3 v2)
             => Math.Sqrt(
                 Math.Pow(v1.X - v2.X, 2) +
                 Math.Pow(v1.Y - v2.Y, 2) +

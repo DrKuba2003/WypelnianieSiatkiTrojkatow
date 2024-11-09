@@ -18,19 +18,21 @@ namespace WypelnianieSiatkiTrojkatow.Utils
 
         public static void FillMesh(Bitmap drawArea, List<Triangle> triangles,
             float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor,
+            Vector3 light, Vector3 lightColor,
+            Func<float, float, float, Vector3> ObjectColor,
             Func<int, int, (int, int)> CanvasTranslate)
         {
             using (var fastBitmap = drawArea.FastLock())
                 foreach (var t in triangles)
                     FillPolygon(fastBitmap, t, kd, ks, m,
-                        objectColor, light, lightColor,
-                        CanvasTranslate);
+                        light, lightColor,
+                        ObjectColor, CanvasTranslate);
         }
 
         public static void FillPolygon(FastBitmap fastBitmap,
             IFillablePolygon poly, float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor,
+            Vector3 light, Vector3 lightColor,
+            Func<float, float, float, Vector3> ObjectColor,
             Func<int, int, (int, int)> CanvasTranslate)
         {
             EdgesBucketSorted ET = poly.GetET();
@@ -52,9 +54,9 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 {
                     for (int x = (int)e.x; x <= (int)e.next.x; x++)
                     {
-                        (int xT, int yT) = CanvasTranslate(x, y);
                         Color c = (Color)GetIFillColor((Triangle)poly, x, y,
-                            kd, ks, m, objectColor, light, lightColor)!;
+                            kd, ks, m, light, lightColor, ObjectColor)!;
+                        (int xT, int yT) = CanvasTranslate(x, y);
                         fastBitmap.SetPixel(xT, yT, c);
                     }
 
@@ -79,12 +81,16 @@ namespace WypelnianieSiatkiTrojkatow.Utils
 
         public static Color? GetIFillColor(IFillablePolygon poly, 
             int x, int y, float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor)
+            Vector3 light, Vector3 lightColor, 
+            Func<float, float, float, Vector3> ObjectColor)
         {
-            Vector3 IL = lightColor;
-            Vector3 IO = objectColor;
-            Vector3 V = new Vector3(0F, 0F, 1F);
             float z = poly.CalculateZ(x, y);
+            (float u, float v, float w) = 
+                poly.GetBarycentricCoordsGlobal(new Vector3(x, y, z));
+            Vector3 IO = ObjectColor(u, v, w);
+
+            Vector3 IL = lightColor;
+            Vector3 V = new Vector3(0F, 0F, 1F);
             Vector3 N = poly.GetNVector(x, y, z);
             Vector3 L = light - new Vector3(x, y, z);
             Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);

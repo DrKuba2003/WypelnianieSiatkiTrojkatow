@@ -452,6 +452,7 @@
             solidColorRBtn.TabStop = true;
             solidColorRBtn.Text = "Kolor stały";
             solidColorRBtn.UseVisualStyleBackColor = true;
+            solidColorRBtn.CheckedChanged += solidColorRBtn_CheckedChanged;
             // 
             // textureRBtn
             // 
@@ -463,6 +464,7 @@
             textureRBtn.TabIndex = 35;
             textureRBtn.Text = "Tekstura";
             textureRBtn.UseVisualStyleBackColor = true;
+            textureRBtn.CheckedChanged += textureRBtn_CheckedChanged;
             // 
             // objectColorPanel
             // 
@@ -517,6 +519,7 @@
             textureFileBtn.TabIndex = 38;
             textureFileBtn.Text = "Wybierz plik";
             textureFileBtn.UseVisualStyleBackColor = true;
+            textureFileBtn.Click += textureFileBtn_Click;
             // 
             // Form1
             // 

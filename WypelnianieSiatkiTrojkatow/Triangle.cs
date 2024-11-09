@@ -77,18 +77,33 @@ namespace WypelnianieSiatkiTrojkatow
         public Vector3 GetNVector(float x, float y, float z)
         {
             Vertex P = new Vertex(new Vector3(x, y, z));
-            double area = GetArea();
-            float u = (float)(Triangle.GetTriangleArea(V1, V2, P)/area);
-            float v = (float)(Triangle.GetTriangleArea(V1, V3, P) / area);
-            float w = 1 - u - v;
+            (float u, float v, float w) = GetBarycentricCoords(P.Par);
 
             return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
         }
 
-        public double GetArea()
-            => GetTriangleArea(V1, V2, V3);
+        public (float, float, float) GetBarycentricCoords(Vector3 P)
+        {
+            double area = GetArea();
+            float u = (float)(Triangle.GetTriangleArea(V1.Par, V2.Par, P) / area);
+            float v = (float)(Triangle.GetTriangleArea(V1.Par, V3.Par, P) / area);
+            float w = 1 - u - v;
+            return (u, v, w);
+        }
+        public (float, float, float) GetBarycentricCoordsGlobal(Vector3 P)
+        {
+            (float u, float v, float w) = GetBarycentricCoords(P);
 
-        public static double GetTriangleArea(Vertex v1, Vertex v2, Vertex v3)
+            float uGlobal = u * V1.u + v * V2.u + w * V3.u;
+            float vGlobal = u * V1.v + v * V2.v + w * V3.v;
+            float wGlobal = 1 - uGlobal - vGlobal;
+            return (uGlobal, vGlobal, wGlobal);
+        }
+
+        public double GetArea()
+            => GetTriangleArea(V1.Par, V2.Par, V3.Par);
+
+        public static double GetTriangleArea(Vector3 v1, Vector3 v2, Vector3 v3)
         {
             double l1 = Vertex.GetLength(v1, v2);
             double l2 = Vertex.GetLength(v2, v3);

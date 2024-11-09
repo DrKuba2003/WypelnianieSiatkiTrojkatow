@@ -49,6 +49,18 @@
     <None Update="Resources\Points\punkty.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Textures\pexels-anniroenkae-2832432.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Textures\pexels-fwstudio-33348-129731.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Textures\pexels-julieaagaard-1426718.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Textures\pexels-scottwebb-1029604.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Textures\pexels-steve-1509534.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -13,19 +13,19 @@ namespace WypelnianieSiatkiTrojkatow
     {
         public Vertex[,] ControlVertexes = new Vertex[4, 4];
         public Vertex[,]? PrecisionVertexes;
-        public List<Triangle> net = new();
+        public List<Triangle> Mesh = new();
 
         public Model(string path, int netP, int alfa, int beta)
         {
             CalculateModel(path, netP, alfa, beta);
         }
 
-        public void LoadTriangles(int N)
+        public void LoadMesh(int N)
         {
             if (ControlVertexes == null ||
                 ControlVertexes.Length == 0) return;
 
-            net.Clear();
+            Mesh.Clear();
 
             PrecisionVertexes = new Vertex[N + 1, N + 1];
             float step = 1.0f / N;
@@ -66,13 +66,13 @@ namespace WypelnianieSiatkiTrojkatow
             {
                 for (int i = 0; i < pts.GetLength(1) - 1; i++)
                 {
-                    net.Add(new Triangle(pts[j, i], pts[j, i + 1], pts[j + 1, i + 1]));
-                    net.Add(new Triangle(pts[j, i], pts[j + 1, i], pts[j + 1, i + 1]));
+                    Mesh.Add(new Triangle(pts[j, i], pts[j, i + 1], pts[j + 1, i + 1]));
+                    Mesh.Add(new Triangle(pts[j, i], pts[j + 1, i], pts[j + 1, i + 1]));
                 }
             }
         }
 
-        public void LoadControlPts(String path)
+        public void LoadControlPts(string path)
         {
             Array.Clear(ControlVertexes);
 
@@ -104,7 +104,7 @@ namespace WypelnianieSiatkiTrojkatow
         public void CalculateModel(string path, int netP, int alfa, int beta)
         {
             LoadControlPts(path);
-            LoadTriangles(netP);
+            LoadMesh(netP);
             RotateVertexes(alfa, beta);
         }
 

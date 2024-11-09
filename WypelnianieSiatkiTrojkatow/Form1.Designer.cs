@@ -373,6 +373,7 @@
             zTrack.Size = new Size(198, 56);
             zTrack.TabIndex = 27;
             zTrack.TickStyle = TickStyle.None;
+            zTrack.Value = 100;
             zTrack.Scroll += zTrack_Scroll;
             // 
             // zValue

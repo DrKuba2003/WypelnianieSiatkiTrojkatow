@@ -44,10 +44,19 @@ namespace WypelnianieSiatkiTrojkatow
                 {
                     float kd = kdTrack.Value / 100F;
                     float ks = ksTrack.Value / 100F;
-                    int m = mTrack.Value, lightZ = zTrack.Value;
+                    int m = mTrack.Value;
+                    var objectC = new Vector3(
+                        objectColorPanel.BackColor.R / 255F,
+                        objectColorPanel.BackColor.G / 255F,
+                        objectColorPanel.BackColor.B / 255F);
+                    var light = new Vector3(0, 0, zTrack.Value);
+                    var lightC = new Vector3(
+                        lightColorPanel.BackColor.R / 255F,
+                        lightColorPanel.BackColor.G / 255F,
+                        lightColorPanel.BackColor.B / 255F);
 
                     DrawingUtil.FillMesh(drawArea, model.Mesh, kd, ks, m,
-                        lightZ, TranslatePtsToBitmap);
+                        objectC, light, lightC, TranslatePtsToBitmap);
                 }
 
                 if (drawTriangleNetCheck.Checked)
@@ -166,6 +175,38 @@ namespace WypelnianieSiatkiTrojkatow
         private void PauseResumeBtn_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void pickLightColorBtn_Click(object sender, EventArgs e)
+        {
+            using (ColorDialog MyDialog = new ColorDialog())
+            {
+                MyDialog.AllowFullOpen = true;
+                MyDialog.Color = lightColorPanel.BackColor;
+
+                // Update the text box color if the user clicks OK 
+                if (MyDialog.ShowDialog() == DialogResult.OK)
+                {
+                    lightColorPanel.BackColor = MyDialog.Color;
+                    Draw();
+                }
+            } 
+        }
+
+        private void pickObjectColorBtn_Click(object sender, EventArgs e)
+        {
+            using (ColorDialog MyDialog = new ColorDialog())
+            {
+                MyDialog.AllowFullOpen = true;
+                MyDialog.Color = objectColorPanel.BackColor;
+
+                // Update the text box color if the user clicks OK 
+                if (MyDialog.ShowDialog() == DialogResult.OK)
+                {
+                    objectColorPanel.BackColor = MyDialog.Color;
+                    Draw();
+                }
+            }
         }
     }
 }

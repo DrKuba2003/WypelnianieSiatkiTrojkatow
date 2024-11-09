@@ -7,6 +7,7 @@ using System.Runtime.Intrinsics;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
+using WypelnianieSiatkiTrojkatow.Interfaces;
 
 namespace WypelnianieSiatkiTrojkatow
 {
@@ -61,19 +62,7 @@ namespace WypelnianieSiatkiTrojkatow
                 ((int)v1.Y, new Edge((int)v2.Y, v1.X, delta));
         }
 
-        public Vector3 GetNVector(int x, int y)
-        {
-            float z = calcZ(x, y);
-            Vertex P = new Vertex(new Vector3(x, y, z));
-            double area = GetArea();
-            float u = (float)(Triangle.GetTriangleArea(V1, V2, P)/area);
-            float v = (float)(Triangle.GetTriangleArea(V1, V3, P) / area);
-            float w = 1 - u - v;
-
-            return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
-        }
-
-        public float calcZ(int x, int y)
+        public float CalculateZ(float x, float y)
         {
             float det = (V2.Y - V3.Y) * (V1.X - V3.X) + (V3.X - V2.X) * (V1.Y - V3.Y);
 
@@ -82,6 +71,17 @@ namespace WypelnianieSiatkiTrojkatow
             float l3 = 1.0f - l1 - l2;
 
             return l1 * V1.Z + l2 * V2.Z + l3 * V3.Z;
+        }
+
+        public Vector3 GetNVector(float x, float y, float z)
+        {
+            Vertex P = new Vertex(new Vector3(x, y, z));
+            double area = GetArea();
+            float u = (float)(Triangle.GetTriangleArea(V1, V2, P)/area);
+            float v = (float)(Triangle.GetTriangleArea(V1, V3, P) / area);
+            float w = 1 - u - v;
+
+            return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
         }
 
         public double GetArea()

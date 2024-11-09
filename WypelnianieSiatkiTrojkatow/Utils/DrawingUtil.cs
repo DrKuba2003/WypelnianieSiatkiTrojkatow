@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WypelnianieSiatkiTrojkatow.Interfaces;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace WypelnianieSiatkiTrojkatow.Utils
@@ -15,17 +16,20 @@ namespace WypelnianieSiatkiTrojkatow.Utils
         private static readonly Pen CONTROL_NET_PEN = new Pen(Brushes.DarkBlue, 2);
 
         public static void FillMesh(Bitmap drawArea, List<Triangle> triangles,
-            float kd, float ks, int m, int lightZ,
+            float kd, float ks, int m,
+            Vector3 objectColor, Vector3 light, Vector3 lightColor,
             Func<int, int, (int, int)> CanvasTranslate)
         {
             using (var fastBitmap = drawArea.FastLock())
                 foreach (var t in triangles)
                     FillPolygon(fastBitmap, t, kd, ks, m,
-                        lightZ, CanvasTranslate);
+                        objectColor, light, lightColor,
+                        CanvasTranslate);
         }
 
-        public static void FillPolygon(FastBitmap fastBitmap, IFillablePolygon poly,
-            float kd, float ks, int m, int lightZ,
+        public static void FillPolygon(FastBitmap fastBitmap,
+            IFillablePolygon poly, float kd, float ks, int m,
+            Vector3 objectColor, Vector3 light, Vector3 lightColor,
             Func<int, int, (int, int)> CanvasTranslate)
         {
             EdgesTable ET = poly.GetET();
@@ -49,7 +53,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     {
                         (int xT, int yT) = CanvasTranslate(x, y);
                         Color c = (Color)GetIFillColor((Triangle)poly, x, y,
-                            kd, ks, m, lightZ)!;
+                            kd, ks, m, objectColor, light, lightColor)!;
                         fastBitmap.SetPixel(xT, yT, c);
                     }
 
@@ -72,15 +76,19 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
         }
 
-        public static Color? GetIFillColor(IFillablePolygon poly, int x, int y,
-            float kd, float ks, int m, int lightZ)
+        public static Color? GetIFillColor(IFillablePolygon poly, 
+            int x, int y, float kd, float ks, int m,
+            Vector3 objectColor, Vector3 light, Vector3 lightColor)
         {
-            Vector3 IL = new Vector3(1F, 1F, 1F);
-            Vector3 IO = new Vector3(0.5F, 0.1F, 0.5F);
-            Vector3 V = Vector3.Normalize(new Vector3(0F, 0F, 1F));
-            Vector3 N = Vector3.Normalize(poly.GetNVector(x, y));
-            Vector3 L = new Vector3(0, 0, lightZ);
+            Vector3 IL = lightColor;
+            Vector3 IO = objectColor;
+            Vector3 V = new Vector3(0F, 0F, 1F);
+            float z = poly.CalculateZ(x, y);
+            Vector3 N = poly.GetNVector(x, y, z);
+            Vector3 L = light - new Vector3(x, y, z);
             Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
+            N = Vector3.Normalize(N);
+            L = Vector3.Normalize(L);
 
             float cosNL = (float)Math.Cos(MathUtil.GetAngle(N, L));
             double cosVR = Math.Cos(MathUtil.GetAngle(V, R));

@@ -382,9 +382,9 @@
             zValue.AutoSize = true;
             zValue.Location = new Point(1258, 235);
             zValue.Name = "zValue";
-            zValue.Size = new Size(17, 20);
+            zValue.Size = new Size(33, 20);
             zValue.TabIndex = 28;
-            zValue.Text = "0";
+            zValue.Text = "100";
             // 
             // PauseResumeBtn
             // 
@@ -417,6 +417,7 @@
             pickLightColorBtn.TabIndex = 31;
             pickLightColorBtn.Text = "Pick";
             pickLightColorBtn.UseVisualStyleBackColor = true;
+            pickLightColorBtn.Click += pickLightColorBtn_Click;
             // 
             // lightColorPanel
             // 
@@ -466,7 +467,7 @@
             // objectColorPanel
             // 
             objectColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            objectColorPanel.BackColor = Color.White;
+            objectColorPanel.BackColor = Color.Purple;
             objectColorPanel.BorderStyle = BorderStyle.FixedSingle;
             objectColorPanel.Location = new Point(1105, 501);
             objectColorPanel.Name = "objectColorPanel";
@@ -482,6 +483,7 @@
             pickObjectColorBtn.TabIndex = 37;
             pickObjectColorBtn.Text = "Pick";
             pickObjectColorBtn.UseVisualStyleBackColor = true;
+            pickObjectColorBtn.Click += pickObjectColorBtn_Click;
             // 
             // texturePathLabel
             // 

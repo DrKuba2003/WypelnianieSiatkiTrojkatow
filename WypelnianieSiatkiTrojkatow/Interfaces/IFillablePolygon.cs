@@ -5,11 +5,12 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WypelnianieSiatkiTrojkatow
+namespace WypelnianieSiatkiTrojkatow.Interfaces
 {
     public interface IFillablePolygon
     {
         public EdgesTable GetET();
-        public Vector3 GetNVector(int x, int y);
+        public float CalculateZ(float x, float y);
+        public Vector3 GetNVector(float x, float y, float z);
     }
 }

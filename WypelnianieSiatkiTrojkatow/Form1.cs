@@ -91,8 +91,6 @@ namespace WypelnianieSiatkiTrojkatow
                 Edge? e = AET.head;
                 while (e is not null && e.next is not null)
                 {
-                    //g.DrawLine(Pens.Magenta,
-                    //    new Point((int)e.x, y), new Point((int)e.next.x, y));
                     for (int x = (int)e.x; x <= (int)e.next.x; x++)
                     {
                         Color c = (Color)GetIFillColor((Triangle)poly, x, y)!;
@@ -107,7 +105,7 @@ namespace WypelnianieSiatkiTrojkatow
                 while (e is not null)
                 {
                     if (e.ymax == y ||
-                        (!ET[ET.maxY].IsEmpty() && e.ymax == y + 1)) // TODO investigate
+                        (!ET[ET.maxY].IsEmpty() && e.ymax == y + 1))
                         AET.Delete(e);
                     else
                         e.x += e.delta;
@@ -117,12 +115,9 @@ namespace WypelnianieSiatkiTrojkatow
 
                 y++;
             } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
-            
-            //if (poly is Triangle)
-            //    DrawTriangle(g, (Triangle)poly, Pens.Magenta);
         }
 
-        private Color? GetIFillColor(Triangle t, int x, int y)
+        private Color? GetIFillColor(IFillablePolygon poly, int x, int y)
         {
             float kd = kdTrack.Value / 100F;
             float ks = ksTrack.Value / 100F;
@@ -130,7 +125,7 @@ namespace WypelnianieSiatkiTrojkatow
             Vector3 IL = new Vector3(1F, 1F, 1F);
             Vector3 IO = new Vector3(0.5F, 0.1F, 0.5F);
             Vector3 V = Vector3.Normalize(new Vector3(0F, 0F, 1F));
-            Vector3 N = Vector3.Normalize((Vector3)V/*v.Nar*/);
+            Vector3 N = Vector3.Normalize(poly.GetNVector(x, y));
             Vector3 L = new Vector3(0, 0, zTrack.Value);
             Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
 
@@ -152,7 +147,7 @@ namespace WypelnianieSiatkiTrojkatow
         private void DrawNet(Graphics g)
         {
             foreach (var t in model.net)
-                DrawTriangle(g, t, Pens.DarkMagenta);
+                DrawTriangle(g, t, Pens.Magenta);
         }
 
         public void DrawTriangle(Graphics g, Triangle t, Pen p)

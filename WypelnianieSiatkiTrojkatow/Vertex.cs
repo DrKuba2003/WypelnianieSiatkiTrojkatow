@@ -74,5 +74,12 @@ namespace WypelnianieSiatkiTrojkatow
             if (PVbr is not null) PVar = Vector3.Transform((Vector3)PVbr, m);
             if (Nbr is not null) Nar = Vector3.Transform((Vector3)Nbr, m);
         }
+
+        public static double GetLength(Vertex v1, Vertex v2)
+            => Math.Sqrt(
+                Math.Pow(v1.X - v2.X, 2) +
+                Math.Pow(v1.Y - v2.Y, 2) +
+                Math.Pow(v1.Z - v2.Z, 2)
+                );
     }
 }

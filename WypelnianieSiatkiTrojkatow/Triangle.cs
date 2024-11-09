@@ -60,5 +60,45 @@ namespace WypelnianieSiatkiTrojkatow
                 ((int)v2.Y, new Edge((int)v1.Y, v2.X, delta)) :
                 ((int)v1.Y, new Edge((int)v2.Y, v1.X, delta));
         }
+
+        public Vector3 GetNVector(int x, int y)
+        {
+            float z = calcZ(x, y);
+            Vertex P = new Vertex(new Vector3(x, y, z));
+            double area = GetArea();
+            float u = (float)(Triangle.GetTriangleArea(V1, V2, P)/area);
+            float v = (float)(Triangle.GetTriangleArea(V1, V3, P) / area);
+            float w = 1 - u - v;
+
+            return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
+        }
+
+        public float calcZ(int x, int y)
+        {
+            float det = (V2.Y - V3.Y) * (V1.X - V3.X) + (V3.X - V2.X) * (V1.Y - V3.Y);
+
+            float l1 = ((V2.Y - V3.Y) * (x - V3.X) + (V3.X - V2.X) * (y - V3.Y)) / det;
+            float l2 = ((V3.Y - V1.Y) * (x - V3.X) + (V1.X - V3.X) * (y - V3.Y)) / det;
+            float l3 = 1.0f - l1 - l2;
+
+            return l1 * V1.Z + l2 * V2.Z + l3 * V3.Z;
+        }
+
+        public double GetArea()
+            => GetTriangleArea(V1, V2, V3);
+
+        public static double GetTriangleArea(Vertex v1, Vertex v2, Vertex v3)
+        {
+            double l1 = Vertex.GetLength(v1, v2);
+            double l2 = Vertex.GetLength(v2, v3);
+            double l3 = Vertex.GetLength(v3, v1);
+            double s = (l1 + l2 + l3) / 2;
+            return Math.Sqrt(
+                s * 
+                (s - l1) * 
+                (s - l2) * 
+                (s - l3)
+                );
+        }
     }
 }

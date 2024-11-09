@@ -69,6 +69,11 @@
             texturePathLabel = new Label();
             label13 = new Label();
             textureFileBtn = new Button();
+            modifyNormalVecCheck = new CheckBox();
+            normalVecPathLabel = new Label();
+            label14 = new Label();
+            normalVecFileBtn = new Button();
+            label15 = new Label();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
@@ -92,8 +97,6 @@
             // drawControlPtsCheck
             // 
             drawControlPtsCheck.AutoSize = true;
-            drawControlPtsCheck.Checked = true;
-            drawControlPtsCheck.CheckState = CheckState.Checked;
             drawControlPtsCheck.Location = new Point(12, 12);
             drawControlPtsCheck.Name = "drawControlPtsCheck";
             drawControlPtsCheck.Size = new Size(180, 24);
@@ -105,8 +108,6 @@
             // drawTriangleNetCheck
             // 
             drawTriangleNetCheck.AutoSize = true;
-            drawTriangleNetCheck.Checked = true;
-            drawTriangleNetCheck.CheckState = CheckState.Checked;
             drawTriangleNetCheck.Location = new Point(12, 42);
             drawTriangleNetCheck.Name = "drawTriangleNetCheck";
             drawTriangleNetCheck.Size = new Size(111, 24);
@@ -228,20 +229,20 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label4.Location = new Point(8, 664);
+            label4.Font = new Font("Segoe UI Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label4.Location = new Point(20, 664);
             label4.Name = "label4";
-            label4.Size = new Size(115, 20);
+            label4.Size = new Size(87, 20);
             label4.TabIndex = 14;
-            label4.Text = "Punkty sciezka:";
+            label4.Text = "Nazwa pliku:";
             // 
             // punktyPathValue
             // 
             punktyPathValue.AutoEllipsis = true;
-            punktyPathValue.Location = new Point(12, 684);
+            punktyPathValue.Location = new Point(20, 684);
             punktyPathValue.Name = "punktyPathValue";
             punktyPathValue.RightToLeft = RightToLeft.No;
-            punktyPathValue.Size = new Size(189, 25);
+            punktyPathValue.Size = new Size(181, 25);
             punktyPathValue.TabIndex = 15;
             punktyPathValue.Text = "Punkty\\punkty.txt";
             punktyPathValue.TextAlign = ContentAlignment.MiddleLeft;
@@ -402,7 +403,7 @@
             label10.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label10.AutoSize = true;
             label10.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label10.Location = new Point(1088, 361);
+            label10.Location = new Point(1088, 345);
             label10.Name = "label10";
             label10.Size = new Size(100, 20);
             label10.TabIndex = 30;
@@ -411,7 +412,7 @@
             // pickLightColorBtn
             // 
             pickLightColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pickLightColorBtn.Location = new Point(1219, 384);
+            pickLightColorBtn.Location = new Point(1219, 368);
             pickLightColorBtn.Name = "pickLightColorBtn";
             pickLightColorBtn.Size = new Size(66, 36);
             pickLightColorBtn.TabIndex = 31;
@@ -424,7 +425,7 @@
             lightColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lightColorPanel.BackColor = Color.White;
             lightColorPanel.BorderStyle = BorderStyle.FixedSingle;
-            lightColorPanel.Location = new Point(1105, 384);
+            lightColorPanel.Location = new Point(1106, 368);
             lightColorPanel.Name = "lightColorPanel";
             lightColorPanel.Size = new Size(83, 36);
             lightColorPanel.TabIndex = 32;
@@ -434,7 +435,7 @@
             label11.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label11.AutoSize = true;
             label11.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label11.Location = new Point(1088, 449);
+            label11.Location = new Point(1088, 428);
             label11.Name = "label11";
             label11.Size = new Size(104, 20);
             label11.TabIndex = 33;
@@ -445,7 +446,7 @@
             solidColorRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             solidColorRBtn.AutoSize = true;
             solidColorRBtn.Checked = true;
-            solidColorRBtn.Location = new Point(1097, 472);
+            solidColorRBtn.Location = new Point(1097, 451);
             solidColorRBtn.Name = "solidColorRBtn";
             solidColorRBtn.Size = new Size(100, 24);
             solidColorRBtn.TabIndex = 34;
@@ -458,7 +459,7 @@
             // 
             textureRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textureRBtn.AutoSize = true;
-            textureRBtn.Location = new Point(1097, 543);
+            textureRBtn.Location = new Point(1097, 523);
             textureRBtn.Name = "textureRBtn";
             textureRBtn.Size = new Size(84, 24);
             textureRBtn.TabIndex = 35;
@@ -471,7 +472,7 @@
             objectColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             objectColorPanel.BackColor = Color.Purple;
             objectColorPanel.BorderStyle = BorderStyle.FixedSingle;
-            objectColorPanel.Location = new Point(1105, 501);
+            objectColorPanel.Location = new Point(1105, 481);
             objectColorPanel.Name = "objectColorPanel";
             objectColorPanel.Size = new Size(83, 36);
             objectColorPanel.TabIndex = 36;
@@ -479,7 +480,7 @@
             // pickObjectColorBtn
             // 
             pickObjectColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pickObjectColorBtn.Location = new Point(1219, 501);
+            pickObjectColorBtn.Location = new Point(1225, 481);
             pickObjectColorBtn.Name = "pickObjectColorBtn";
             pickObjectColorBtn.Size = new Size(66, 36);
             pickObjectColorBtn.TabIndex = 37;
@@ -491,7 +492,7 @@
             // 
             texturePathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             texturePathLabel.AutoEllipsis = true;
-            texturePathLabel.Location = new Point(1106, 590);
+            texturePathLabel.Location = new Point(1106, 570);
             texturePathLabel.Name = "texturePathLabel";
             texturePathLabel.RightToLeft = RightToLeft.No;
             texturePathLabel.Size = new Size(189, 25);
@@ -504,16 +505,16 @@
             label13.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label13.AutoSize = true;
             label13.Font = new Font("Segoe UI Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label13.Location = new Point(1105, 570);
+            label13.Location = new Point(1105, 550);
             label13.Name = "label13";
-            label13.Size = new Size(58, 20);
+            label13.Size = new Size(87, 20);
             label13.TabIndex = 39;
-            label13.Text = "Sciezka:";
+            label13.Text = "Nazwa pliku:";
             // 
             // textureFileBtn
             // 
             textureFileBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textureFileBtn.Location = new Point(1127, 618);
+            textureFileBtn.Location = new Point(1127, 598);
             textureFileBtn.Name = "textureFileBtn";
             textureFileBtn.Size = new Size(137, 29);
             textureFileBtn.TabIndex = 38;
@@ -521,11 +522,71 @@
             textureFileBtn.UseVisualStyleBackColor = true;
             textureFileBtn.Click += textureFileBtn_Click;
             // 
+            // modifyNormalVecCheck
+            // 
+            modifyNormalVecCheck.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            modifyNormalVecCheck.AutoSize = true;
+            modifyNormalVecCheck.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            modifyNormalVecCheck.Location = new Point(1085, 640);
+            modifyNormalVecCheck.Name = "modifyNormalVecCheck";
+            modifyNormalVecCheck.Size = new Size(226, 24);
+            modifyNormalVecCheck.TabIndex = 41;
+            modifyNormalVecCheck.Text = "Modyfikuj wektor normalny";
+            modifyNormalVecCheck.UseVisualStyleBackColor = true;
+            // 
+            // normalVecPathLabel
+            // 
+            normalVecPathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            normalVecPathLabel.AutoEllipsis = true;
+            normalVecPathLabel.Location = new Point(1106, 687);
+            normalVecPathLabel.Name = "normalVecPathLabel";
+            normalVecPathLabel.RightToLeft = RightToLeft.No;
+            normalVecPathLabel.Size = new Size(189, 25);
+            normalVecPathLabel.TabIndex = 44;
+            normalVecPathLabel.Text = "Punkty\\punkty.txt";
+            normalVecPathLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // label14
+            // 
+            label14.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label14.AutoSize = true;
+            label14.Font = new Font("Segoe UI Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label14.Location = new Point(1105, 667);
+            label14.Name = "label14";
+            label14.Size = new Size(87, 20);
+            label14.TabIndex = 43;
+            label14.Text = "Nazwa pliku:";
+            // 
+            // normalVecFileBtn
+            // 
+            normalVecFileBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            normalVecFileBtn.Location = new Point(1127, 715);
+            normalVecFileBtn.Name = "normalVecFileBtn";
+            normalVecFileBtn.Size = new Size(137, 29);
+            normalVecFileBtn.TabIndex = 42;
+            normalVecFileBtn.Text = "Wybierz plik";
+            normalVecFileBtn.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            label15.Location = new Point(11, 644);
+            label15.Name = "label15";
+            label15.Size = new Size(58, 20);
+            label15.TabIndex = 45;
+            label15.Text = "Punkty";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(label15);
+            Controls.Add(normalVecPathLabel);
+            Controls.Add(label14);
+            Controls.Add(normalVecFileBtn);
+            Controls.Add(modifyNormalVecCheck);
             Controls.Add(texturePathLabel);
             Controls.Add(label13);
             Controls.Add(textureFileBtn);
@@ -627,5 +688,10 @@
         private Label texturePathLabel;
         private Label label13;
         private Button textureFileBtn;
+        private CheckBox modifyNormalVecCheck;
+        private Label normalVecPathLabel;
+        private Label label14;
+        private Button normalVecFileBtn;
+        private Label label15;
     }
 }

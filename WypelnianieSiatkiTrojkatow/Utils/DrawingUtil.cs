@@ -57,7 +57,9 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                         Color c = (Color)GetIFillColor((Triangle)poly, x, y,
                             kd, ks, m, light, lightColor, ObjectColor)!;
                         (int xT, int yT) = CanvasTranslate(x, y);
-                        fastBitmap.SetPixel(xT, yT, c);
+                        if (xT >= 0 && xT < fastBitmap.Width &&
+                            yT >= 0 && yT < fastBitmap.Height)
+                            fastBitmap.SetPixel(xT, yT, c);
                     }
 
                     e = e.next.next;
@@ -79,13 +81,13 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
         }
 
-        public static Color? GetIFillColor(IFillablePolygon poly, 
+        public static Color? GetIFillColor(IFillablePolygon poly,
             int x, int y, float kd, float ks, int m,
-            Vector3 light, Vector3 lightColor, 
+            Vector3 light, Vector3 lightColor,
             Func<float, float, float, Vector3> ObjectColor)
         {
             float z = poly.CalculateZ(x, y);
-            (float u, float v, float w) = 
+            (float u, float v, float w) =
                 poly.GetBarycentricCoordsGlobal(new Vector3(x, y, z));
             Vector3 IO = ObjectColor(u, v, w);
 

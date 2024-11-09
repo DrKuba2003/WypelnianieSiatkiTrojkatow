@@ -100,12 +100,12 @@ namespace WypelnianieSiatkiTrojkatow
             netPrecValue.Text = netPrecisionTrack.Value.ToString();
             alfaValue.Text = alfaAngleTrack.Value.ToString();
             betaValue.Text = betaAngleTrack.Value.ToString();
-            punktyPathValue.Text = DEFAULT_PTS;
             kdValue.Text = $"{kdTrack.Value}%";
             ksValue.Text = $"{ksTrack.Value}%";
             mValue.Text = mTrack.Value.ToString();
             zValue.Text = zTrack.Value.ToString();
-            texturePathLabel.Text = DEFAULT_TEXTURE;
+            punktyPathValue.Text = DEFAULT_PTS.Split('\\')[2];
+            texturePathLabel.Text = DEFAULT_TEXTURE.Split('\\')[2];
         }
 
         private (int, int) TranslatePtsToBitmap(int x, int y)
@@ -208,7 +208,8 @@ namespace WypelnianieSiatkiTrojkatow
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string path = fileDialog.FileName;
-                    punktyPathValue.Text = path;
+                    var arr = path.Split('\\');
+                    punktyPathValue.Text = arr[arr.Length - 1];
 
                     model.CalculateModel(path, netPrecisionTrack.Value,
                         alfaAngleTrack.Value, betaAngleTrack.Value);
@@ -269,7 +270,8 @@ namespace WypelnianieSiatkiTrojkatow
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string path = fileDialog.FileName;
-                    texturePathLabel.Text = path;
+                    var arr = path.Split('\\');
+                    texturePathLabel.Text = arr[arr.Length - 1];
 
                     LoadTexture(path);
 

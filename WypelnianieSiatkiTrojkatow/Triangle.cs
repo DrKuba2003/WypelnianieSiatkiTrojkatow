@@ -7,6 +7,7 @@ using System.Runtime.Intrinsics;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
+using WypelnianieSiatkiTrojkatow.Edges;
 using WypelnianieSiatkiTrojkatow.Interfaces;
 
 namespace WypelnianieSiatkiTrojkatow
@@ -36,9 +37,9 @@ namespace WypelnianieSiatkiTrojkatow
             return (min, max);
         }
 
-        public EdgesTable GetET()
+        public EdgesBucketSorted GetET()
         {
-            EdgesTable ET = new();
+            EdgesBucketSorted ET = new();
 
             ET.Add(GetEdgeET(V1, V2));
             ET.Add(GetEdgeET(V2, V3));

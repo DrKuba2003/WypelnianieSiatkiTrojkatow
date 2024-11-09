@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WypelnianieSiatkiTrojkatow
+namespace WypelnianieSiatkiTrojkatow.Edges
 {
-    public class EdgesTable
+    public class EdgesBucketSorted
     {
         public Dictionary<int, EdgeList> ET { get; init; }
         public int minY { get; private set; }
         public int maxY { get; private set; }
 
-        public EdgesTable()
+        public EdgesBucketSorted()
         {
             ET = new Dictionary<int, EdgeList>();
             minY = int.MaxValue;

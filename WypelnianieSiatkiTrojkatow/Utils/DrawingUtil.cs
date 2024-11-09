@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WypelnianieSiatkiTrojkatow.Edges;
 using WypelnianieSiatkiTrojkatow.Interfaces;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -32,7 +33,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Vector3 objectColor, Vector3 light, Vector3 lightColor,
             Func<int, int, (int, int)> CanvasTranslate)
         {
-            EdgesTable ET = poly.GetET();
+            EdgesBucketSorted ET = poly.GetET();
             if (ET.IsEmpty()) return;
 
             int y = ET.minY;

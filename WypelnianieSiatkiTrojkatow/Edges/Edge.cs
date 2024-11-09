@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WypelnianieSiatkiTrojkatow
+namespace WypelnianieSiatkiTrojkatow.Edges
 {
     public class Edge
     {

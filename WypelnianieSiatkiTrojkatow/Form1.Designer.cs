@@ -58,6 +58,17 @@
             zTrack = new TrackBar();
             zValue = new Label();
             PauseResumeBtn = new Button();
+            label10 = new Label();
+            pickLightColorBtn = new Button();
+            lightColorPanel = new Panel();
+            label11 = new Label();
+            solidColorRBtn = new RadioButton();
+            textureRBtn = new RadioButton();
+            objectColorPanel = new Panel();
+            pickObjectColorBtn = new Button();
+            texturePathLabel = new Label();
+            label13 = new Label();
+            textureFileBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
@@ -150,8 +161,8 @@
             // alfaAngleTrack
             // 
             alfaAngleTrack.Location = new Point(11, 199);
-            alfaAngleTrack.Maximum = 45;
-            alfaAngleTrack.Minimum = -45;
+            alfaAngleTrack.Maximum = 90;
+            alfaAngleTrack.Minimum = -90;
             alfaAngleTrack.Name = "alfaAngleTrack";
             alfaAngleTrack.Size = new Size(180, 56);
             alfaAngleTrack.TabIndex = 7;
@@ -170,7 +181,7 @@
             // betaAngleTrack
             // 
             betaAngleTrack.Location = new Point(12, 267);
-            betaAngleTrack.Maximum = 80;
+            betaAngleTrack.Maximum = 90;
             betaAngleTrack.Name = "betaAngleTrack";
             betaAngleTrack.Size = new Size(180, 56);
             betaAngleTrack.TabIndex = 9;
@@ -237,14 +248,19 @@
             // 
             // kdTrack
             // 
+            kdTrack.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             kdTrack.Location = new Point(1088, 32);
+            kdTrack.Maximum = 100;
             kdTrack.Name = "kdTrack";
             kdTrack.Size = new Size(207, 56);
             kdTrack.TabIndex = 16;
             kdTrack.TickStyle = TickStyle.None;
+            kdTrack.Value = 100;
+            kdTrack.Scroll += kdTrack_Scroll;
             // 
             // label5
             // 
+            label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label5.AutoSize = true;
             label5.Location = new Point(1088, 9);
             label5.Name = "label5";
@@ -254,15 +270,17 @@
             // 
             // kdValue
             // 
+            kdValue.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             kdValue.AutoSize = true;
-            kdValue.Location = new Point(1270, 12);
+            kdValue.Location = new Point(1250, 9);
             kdValue.Name = "kdValue";
-            kdValue.Size = new Size(17, 20);
+            kdValue.Size = new Size(45, 20);
             kdValue.TabIndex = 18;
-            kdValue.Text = "0";
+            kdValue.Text = "100%";
             // 
             // label6
             // 
+            label6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label6.AutoSize = true;
             label6.Location = new Point(1088, 76);
             label6.Name = "label6";
@@ -272,23 +290,29 @@
             // 
             // ksTrack
             // 
+            ksTrack.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ksTrack.Location = new Point(1088, 99);
+            ksTrack.Maximum = 100;
             ksTrack.Name = "ksTrack";
-            ksTrack.Size = new Size(199, 56);
+            ksTrack.Size = new Size(207, 56);
             ksTrack.TabIndex = 20;
             ksTrack.TickStyle = TickStyle.None;
+            ksTrack.Value = 100;
+            ksTrack.Scroll += ksTrack_Scroll;
             // 
             // ksValue
             // 
+            ksValue.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ksValue.AutoSize = true;
-            ksValue.Location = new Point(1270, 76);
+            ksValue.Location = new Point(1250, 76);
             ksValue.Name = "ksValue";
-            ksValue.Size = new Size(17, 20);
+            ksValue.Size = new Size(45, 20);
             ksValue.TabIndex = 21;
-            ksValue.Text = "0";
+            ksValue.Text = "100%";
             // 
             // label7
             // 
+            label7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label7.AutoSize = true;
             label7.Location = new Point(1088, 144);
             label7.Name = "label7";
@@ -298,26 +322,33 @@
             // 
             // mValue
             // 
+            mValue.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             mValue.AutoSize = true;
-            mValue.Location = new Point(1270, 144);
+            mValue.Location = new Point(1258, 144);
             mValue.Name = "mValue";
             mValue.Size = new Size(17, 20);
             mValue.TabIndex = 23;
-            mValue.Text = "0";
+            mValue.Text = "1";
             // 
             // mTrack
             // 
+            mTrack.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             mTrack.Location = new Point(1088, 167);
+            mTrack.Maximum = 100;
+            mTrack.Minimum = 1;
             mTrack.Name = "mTrack";
-            mTrack.Size = new Size(199, 56);
+            mTrack.Size = new Size(207, 56);
             mTrack.TabIndex = 24;
             mTrack.TickStyle = TickStyle.None;
+            mTrack.Value = 1;
+            mTrack.Scroll += mTrack_Scroll;
             // 
             // label8
             // 
+            label8.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label8.AutoSize = true;
             label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label8.Location = new Point(1088, 203);
+            label8.Location = new Point(1088, 206);
             label8.Name = "label8";
             label8.Size = new Size(83, 20);
             label8.TabIndex = 25;
@@ -325,8 +356,9 @@
             // 
             // label9
             // 
+            label9.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label9.AutoSize = true;
-            label9.Location = new Point(1097, 226);
+            label9.Location = new Point(1097, 235);
             label9.Name = "label9";
             label9.Size = new Size(16, 20);
             label9.TabIndex = 26;
@@ -334,16 +366,20 @@
             // 
             // zTrack
             // 
-            zTrack.Location = new Point(1097, 249);
+            zTrack.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            zTrack.Location = new Point(1097, 258);
+            zTrack.Maximum = 1000;
             zTrack.Name = "zTrack";
-            zTrack.Size = new Size(190, 56);
+            zTrack.Size = new Size(198, 56);
             zTrack.TabIndex = 27;
             zTrack.TickStyle = TickStyle.None;
+            zTrack.Scroll += zTrack_Scroll;
             // 
             // zValue
             // 
+            zValue.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             zValue.AutoSize = true;
-            zValue.Location = new Point(1270, 226);
+            zValue.Location = new Point(1258, 235);
             zValue.Name = "zValue";
             zValue.Size = new Size(17, 20);
             zValue.TabIndex = 28;
@@ -351,18 +387,150 @@
             // 
             // PauseResumeBtn
             // 
-            PauseResumeBtn.Location = new Point(1152, 276);
+            PauseResumeBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            PauseResumeBtn.Location = new Point(1147, 304);
             PauseResumeBtn.Name = "PauseResumeBtn";
             PauseResumeBtn.Size = new Size(94, 29);
             PauseResumeBtn.TabIndex = 29;
             PauseResumeBtn.Text = "Pause";
             PauseResumeBtn.UseVisualStyleBackColor = true;
+            PauseResumeBtn.Click += PauseResumeBtn_Click;
+            // 
+            // label10
+            // 
+            label10.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            label10.Location = new Point(1088, 361);
+            label10.Name = "label10";
+            label10.Size = new Size(100, 20);
+            label10.TabIndex = 30;
+            label10.Text = "Kolor swiatla";
+            // 
+            // pickLightColorBtn
+            // 
+            pickLightColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pickLightColorBtn.Location = new Point(1219, 384);
+            pickLightColorBtn.Name = "pickLightColorBtn";
+            pickLightColorBtn.Size = new Size(66, 36);
+            pickLightColorBtn.TabIndex = 31;
+            pickLightColorBtn.Text = "Pick";
+            pickLightColorBtn.UseVisualStyleBackColor = true;
+            // 
+            // lightColorPanel
+            // 
+            lightColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lightColorPanel.BackColor = Color.White;
+            lightColorPanel.BorderStyle = BorderStyle.FixedSingle;
+            lightColorPanel.Location = new Point(1105, 384);
+            lightColorPanel.Name = "lightColorPanel";
+            lightColorPanel.Size = new Size(83, 36);
+            lightColorPanel.TabIndex = 32;
+            // 
+            // label11
+            // 
+            label11.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label11.AutoSize = true;
+            label11.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            label11.Location = new Point(1088, 449);
+            label11.Name = "label11";
+            label11.Size = new Size(104, 20);
+            label11.TabIndex = 33;
+            label11.Text = "Kolor obiektu";
+            // 
+            // solidColorRBtn
+            // 
+            solidColorRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            solidColorRBtn.AutoSize = true;
+            solidColorRBtn.Checked = true;
+            solidColorRBtn.Location = new Point(1097, 472);
+            solidColorRBtn.Name = "solidColorRBtn";
+            solidColorRBtn.Size = new Size(100, 24);
+            solidColorRBtn.TabIndex = 34;
+            solidColorRBtn.TabStop = true;
+            solidColorRBtn.Text = "Kolor stały";
+            solidColorRBtn.UseVisualStyleBackColor = true;
+            // 
+            // textureRBtn
+            // 
+            textureRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            textureRBtn.AutoSize = true;
+            textureRBtn.Location = new Point(1097, 543);
+            textureRBtn.Name = "textureRBtn";
+            textureRBtn.Size = new Size(84, 24);
+            textureRBtn.TabIndex = 35;
+            textureRBtn.Text = "Tekstura";
+            textureRBtn.UseVisualStyleBackColor = true;
+            // 
+            // objectColorPanel
+            // 
+            objectColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            objectColorPanel.BackColor = Color.White;
+            objectColorPanel.BorderStyle = BorderStyle.FixedSingle;
+            objectColorPanel.Location = new Point(1105, 501);
+            objectColorPanel.Name = "objectColorPanel";
+            objectColorPanel.Size = new Size(83, 36);
+            objectColorPanel.TabIndex = 36;
+            // 
+            // pickObjectColorBtn
+            // 
+            pickObjectColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pickObjectColorBtn.Location = new Point(1219, 501);
+            pickObjectColorBtn.Name = "pickObjectColorBtn";
+            pickObjectColorBtn.Size = new Size(66, 36);
+            pickObjectColorBtn.TabIndex = 37;
+            pickObjectColorBtn.Text = "Pick";
+            pickObjectColorBtn.UseVisualStyleBackColor = true;
+            // 
+            // texturePathLabel
+            // 
+            texturePathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            texturePathLabel.AutoEllipsis = true;
+            texturePathLabel.Location = new Point(1106, 590);
+            texturePathLabel.Name = "texturePathLabel";
+            texturePathLabel.RightToLeft = RightToLeft.No;
+            texturePathLabel.Size = new Size(189, 25);
+            texturePathLabel.TabIndex = 40;
+            texturePathLabel.Text = "Punkty\\punkty.txt";
+            texturePathLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // label13
+            // 
+            label13.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label13.AutoSize = true;
+            label13.Font = new Font("Segoe UI Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label13.Location = new Point(1105, 570);
+            label13.Name = "label13";
+            label13.Size = new Size(58, 20);
+            label13.TabIndex = 39;
+            label13.Text = "Sciezka:";
+            // 
+            // textureFileBtn
+            // 
+            textureFileBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            textureFileBtn.Location = new Point(1127, 618);
+            textureFileBtn.Name = "textureFileBtn";
+            textureFileBtn.Size = new Size(137, 29);
+            textureFileBtn.TabIndex = 38;
+            textureFileBtn.Text = "Wybierz plik";
+            textureFileBtn.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(texturePathLabel);
+            Controls.Add(label13);
+            Controls.Add(textureFileBtn);
+            Controls.Add(pickObjectColorBtn);
+            Controls.Add(objectColorPanel);
+            Controls.Add(textureRBtn);
+            Controls.Add(solidColorRBtn);
+            Controls.Add(label11);
+            Controls.Add(lightColorPanel);
+            Controls.Add(pickLightColorBtn);
+            Controls.Add(label10);
             Controls.Add(PauseResumeBtn);
             Controls.Add(zValue);
             Controls.Add(zTrack);
@@ -442,5 +610,16 @@
         private TrackBar zTrack;
         private Label zValue;
         private Button PauseResumeBtn;
+        private Label label10;
+        private Button pickLightColorBtn;
+        private Panel lightColorPanel;
+        private Label label11;
+        private RadioButton solidColorRBtn;
+        private RadioButton textureRBtn;
+        private Panel objectColorPanel;
+        private Button pickObjectColorBtn;
+        private Label texturePathLabel;
+        private Label label13;
+        private Button textureFileBtn;
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WypelnianieSiatkiTrojkatow
 {
-    public class Triangle : IPolygon
+    public class Triangle : IFillablePolygon
     {
         public Vertex V1 { get; set; }
         public Vertex V2 { get; set; }
@@ -54,9 +54,11 @@ namespace WypelnianieSiatkiTrojkatow
 
             if (Math.Abs(v1.Y - v2.Y) < 1) return null;
 
+            float delta = (v2.X - v1.X) / (v2.Y - v1.Y);
+
             return v1.Y > v2.Y ?
-                ((int)v2.Y, new Edge((int)v1.Y, v2.X, (v2.X - v1.X) / (v2.Y - v1.Y))) :
-                ((int)v1.Y, new Edge((int)v2.Y, v1.X, (v1.X - v2.X) / (v1.Y - v2.Y)));
+                ((int)v2.Y, new Edge((int)v1.Y, v2.X, delta)) :
+                ((int)v1.Y, new Edge((int)v2.Y, v1.X, delta));
         }
     }
 }

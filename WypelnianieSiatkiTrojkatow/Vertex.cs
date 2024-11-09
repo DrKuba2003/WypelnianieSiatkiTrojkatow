@@ -41,7 +41,7 @@ namespace WypelnianieSiatkiTrojkatow
 
             if (Pu is not null && Pv is not null)
             {
-                Nbr = Pu * Pv;
+                Nbr = Vector3.Cross((Vector3)Pu, (Vector3)Pv);
                 Nar = Nbr;
             }
         }

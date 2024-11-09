@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WypelnianieSiatkiTrojkatow
 {
-    public interface IPolygon
+    public interface IFillablePolygon
     {
         public EdgesTable GetET();
     }

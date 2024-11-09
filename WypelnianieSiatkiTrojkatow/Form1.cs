@@ -1,11 +1,13 @@
+using System.Drawing;
 using System.Numerics;
+using System.Runtime.Serialization;
 using WypelnianieSiatkiTrojkatow.Utils;
 
 namespace WypelnianieSiatkiTrojkatow
 {
     public partial class Form1 : Form
     {
-        private const string DEFAULT_PTS = "Punkty\\punkty.txt";
+        private const string DEFAULT_PTS = "Punkty\\punkty4.txt";
         private static readonly Pen CONTROL_NET_PEN = new Pen(Brushes.DarkBlue, 2);
 
         private Bitmap drawArea;
@@ -16,10 +18,7 @@ namespace WypelnianieSiatkiTrojkatow
             InitializeComponent();
 
             // set labels text
-            netPrecValue.Text = netPrecisionTrack.Value.ToString();
-            alfaValue.Text = alfaAngleTrack.Value.ToString();
-            betaValue.Text = betaAngleTrack.Value.ToString();
-            punktyPathValue.Text = DEFAULT_PTS;
+            SetLabels();
 
             drawArea = new Bitmap(Canvas.Size.Width, Canvas.Size.Height);
             Canvas.Image = drawArea;
@@ -28,6 +27,18 @@ namespace WypelnianieSiatkiTrojkatow
                 alfaAngleTrack.Value, betaAngleTrack.Value);
 
             Draw();
+        }
+
+        private void SetLabels()
+        {
+            netPrecValue.Text = netPrecisionTrack.Value.ToString();
+            alfaValue.Text = alfaAngleTrack.Value.ToString();
+            betaValue.Text = betaAngleTrack.Value.ToString();
+            punktyPathValue.Text = DEFAULT_PTS;
+            kdValue.Text = $"{kdTrack.Value}%";
+            ksValue.Text = $"{ksTrack.Value}%";
+            mValue.Text = mTrack.Value.ToString();
+            zValue.Text = zTrack.Value.ToString();
         }
 
         public void Draw()
@@ -61,7 +72,7 @@ namespace WypelnianieSiatkiTrojkatow
                 FillPolygon(g, t);
         }
 
-        public void FillPolygon(Graphics g, IPolygon poly)
+        public void FillPolygon(Graphics g, IFillablePolygon poly)
         {
             EdgesTable ET = poly.GetET();
             if (ET.IsEmpty()) return;
@@ -80,8 +91,15 @@ namespace WypelnianieSiatkiTrojkatow
                 Edge? e = AET.head;
                 while (e is not null && e.next is not null)
                 {
-                    g.DrawLine(Pens.Magenta,
-                        new Point((int)e.x, y), new Point((int)e.next.x, y));
+                    //g.DrawLine(Pens.Magenta,
+                    //    new Point((int)e.x, y), new Point((int)e.next.x, y));
+                    for (int x = (int)e.x; x <= (int)e.next.x; x++)
+                    {
+                        Color c = (Color)GetIFillColor((Triangle)poly, x, y)!;
+                        var p = new Pen(c);
+                        g.DrawRectangle(p, new Rectangle(x, y, 1, 1));
+                        p.Dispose();
+                    }
                     e = e.next.next;
                 }
 
@@ -99,10 +117,37 @@ namespace WypelnianieSiatkiTrojkatow
 
                 y++;
             } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
-
-            if (poly is Triangle)
-                DrawTriangle(g, (Triangle)poly, Pens.Magenta);
+            
+            //if (poly is Triangle)
+            //    DrawTriangle(g, (Triangle)poly, Pens.Magenta);
         }
+
+        private Color? GetIFillColor(Triangle t, int x, int y)
+        {
+            float kd = kdTrack.Value / 100F;
+            float ks = ksTrack.Value / 100F;
+            int m = mTrack.Value;
+            Vector3 IL = new Vector3(1F, 1F, 1F);
+            Vector3 IO = new Vector3(0.5F, 0.1F, 0.5F);
+            Vector3 V = Vector3.Normalize(new Vector3(0F, 0F, 1F));
+            Vector3 N = Vector3.Normalize((Vector3)V/*v.Nar*/);
+            Vector3 L = new Vector3(0, 0, zTrack.Value);
+            Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
+
+            float cosNL = (float)Math.Cos(GetAngle(N, L));
+            double cosVR = Math.Cos(GetAngle(V, R));
+            Vector3 I = kd * IL * IO * (cosNL >= 0 ? cosNL : 0) +
+                ks * IL * IO * (cosVR >= 0 ? (float)Math.Pow(cosVR, m) : 0);
+
+            return Color.FromArgb(
+                I.X <= 1 ? (int)(I.X * 255) : 255,
+                I.Y <= 1 ? (int)(I.Y * 255) : 255,
+                I.Z <= 1 ? (int)(I.Z * 255) : 255
+                );
+        }
+
+        private float GetAngle(Vector3 v1, Vector3 v2)
+            => v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
 
         private void DrawNet(Graphics g)
         {
@@ -195,6 +240,30 @@ namespace WypelnianieSiatkiTrojkatow
             Draw();
         }
 
+        private void kdTrack_Scroll(object sender, EventArgs e)
+        {
+            kdValue.Text = $"{kdTrack.Value}%";
+            Draw();
+        }
+
+        private void ksTrack_Scroll(object sender, EventArgs e)
+        {
+            ksValue.Text = $"{ksTrack.Value}%";
+            Draw();
+        }
+
+        private void mTrack_Scroll(object sender, EventArgs e)
+        {
+            mValue.Text = mTrack.Value.ToString();
+            Draw();
+        }
+
+        private void zTrack_Scroll(object sender, EventArgs e)
+        {
+            zValue.Text = zTrack.Value.ToString();
+            Draw();
+        }
+
         private void pointFileBtn_Click(object sender, EventArgs e)
         {
             using (var fileDialog = new OpenFileDialog())
@@ -218,5 +287,9 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
+        private void PauseResumeBtn_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

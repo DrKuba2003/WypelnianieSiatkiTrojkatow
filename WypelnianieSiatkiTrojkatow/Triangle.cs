@@ -70,13 +70,7 @@ namespace WypelnianieSiatkiTrojkatow
             return l1 * V1.Z + l2 * V2.Z + l3 * V3.Z;
         }
 
-        public Vector3 GetNVector(float x, float y, float z)
-        {
-            Vertex P = new Vertex(new Vector3(x, y, z));
-            (float u, float v, float w) = GetBarycentricCoords(P.Par);
 
-            return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
-        }
 
         public (float, float, float) GetBarycentricCoords(Vector3 P)
         {
@@ -93,7 +87,7 @@ namespace WypelnianieSiatkiTrojkatow
             float uGlobal = u * V1.u + v * V2.u + w * V3.u;
             float vGlobal = u * V1.v + v * V2.v + w * V3.v;
             float wGlobal = 1 - uGlobal - vGlobal;
-            return (uGlobal, vGlobal, wGlobal);
+             return (uGlobal, vGlobal, wGlobal);
         }
 
         public double GetArea()
@@ -111,6 +105,19 @@ namespace WypelnianieSiatkiTrojkatow
                 (s - l2) * 
                 (s - l3)
                 );
+        }
+        public Vector3 GetNVector(float u, float v, float w)
+        {
+            return u * (Vector3)V1.Nar! + v * (Vector3)V2.Nar! + w * (Vector3)V3.Nar!;
+        }
+        public Vector3 GetPuVector(float u, float v, float w)
+        {
+            return u * (Vector3)V1.PUar! + v * (Vector3)V2.PUar! + w * (Vector3)V3.PUar!;
+        }
+
+        public Vector3 GetPvVector(float u, float v, float w)
+        {
+            return u * (Vector3)V1.PVar! + v * (Vector3)V2.PVar! + w * (Vector3)V3.PVar!;
         }
     }
 }

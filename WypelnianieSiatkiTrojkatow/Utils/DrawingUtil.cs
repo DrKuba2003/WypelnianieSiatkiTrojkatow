@@ -21,6 +21,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Vector3 light, Vector3 lightColor,
             Func<float, float, float, Vector3> ObjectColor,
             Func<int, int, (int, int)> CanvasTranslate,
+            bool modifyNormal, Color[,] NormalMap,
             Func<bool> isCancelled)
         {
             using (var fastBitmap = drawArea.FastLock())
@@ -33,6 +34,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     FillPolygon(fastBitmap, triangle, kd, ks, m,
                         light, lightColor,
                         ObjectColor, CanvasTranslate,
+                        modifyNormal, NormalMap,
                         isCancelled);
                     if (isCancelled()) return;
                 });
@@ -53,6 +55,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Vector3 light, Vector3 lightColor,
             Func<float, float, float, Vector3> ObjectColor,
             Func<int, int, (int, int)> CanvasTranslate,
+            bool modifyNormal, Color[,] NormalMap,
             Func<bool> isCancelled)
         {
             EdgesBucketSorted ET = poly.GetET();
@@ -75,7 +78,8 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     for (int x = (int)e.x; x <= (int)e.next.x; x++)
                     {
                         Color c = (Color)GetIFillColor((Triangle)poly, x, y,
-                            kd, ks, m, light, lightColor, ObjectColor)!;
+                            kd, ks, m, light, lightColor, ObjectColor,
+                            modifyNormal, NormalMap)!;
                         (int xT, int yT) = CanvasTranslate(x, y);
                         if (xT >= 0 && xT < fastBitmap.Width &&
                             yT >= 0 && yT < fastBitmap.Height)
@@ -104,20 +108,56 @@ namespace WypelnianieSiatkiTrojkatow.Utils
         public static Color? GetIFillColor(IFillablePolygon poly,
             int x, int y, float kd, float ks, int m,
             Vector3 light, Vector3 lightColor,
-            Func<float, float, float, Vector3> ObjectColor)
+            Func<float, float, float, Vector3> ObjectColor,
+            bool modifyNormal, Color[,] NormalMap)
         {
             float z = poly.CalculateZ(x, y);
             (float u, float v, float w) =
+                poly.GetBarycentricCoords(new Vector3(x, y, z));
+            (float uG, float vG, float wG) =
                 poly.GetBarycentricCoordsGlobal(new Vector3(x, y, z));
-            Vector3 IO = ObjectColor(u, v, w);
+            if (uG is float.NaN) uG = 0;
+            if (vG is float.NaN) vG = 0;
+            if (wG is float.NaN) wG = 0;
+
+            Vector3 IO = ObjectColor(uG, vG, wG);
 
             Vector3 IL = lightColor;
             Vector3 V = new Vector3(0F, 0F, 1F);
-            Vector3 N = poly.GetNVector(x, y, z);
-            Vector3 L = light - new Vector3(x, y, z);
-            Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
+            Vector3 N = poly.GetNVector(u, v, w);
             N = Vector3.Normalize(N);
+            if (modifyNormal)
+            {
+
+                int width = NormalMap.GetLength(0);
+                int height = NormalMap.GetLength(1);
+
+                uG = 1 - uG;
+                Color c = NormalMap[
+                    uG <= 0 ? 0 : uG >= 1 ? width - 1 :
+                        (int)(uG * width),
+                    vG <= 0 ? 0 : vG >= 1 ? height - 1 :
+                        (int)(vG * height)
+                    ];
+                Vector3 Nt = new Vector3(
+                    c.R / 127.5F - 1,
+                    c.G / 127.5F - 1,
+                    c.B / 127.5F - 1
+                    );
+                Vector3 Pu = poly.GetPuVector(u, v, w);
+                Vector3 Pv = poly.GetPvVector(u, v, w);
+                Pu = Vector3.Normalize(Pu);
+                Pv = Vector3.Normalize(Pv);
+                N = new Vector3(
+                    Nt.X * Pu.X + Nt.Y * Pv.X + Nt.Z * N.X,
+                    Nt.X * Pu.Y + Nt.Y * Pv.Y + Nt.Z * N.Y,
+                    Nt.X * Pu.Z + Nt.Y * Pv.Z + Nt.Z * N.Z
+                    );
+            }
+
+            Vector3 L = light - new Vector3(x, y, z);
             L = Vector3.Normalize(L);
+            Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
 
             float cosNL = Vector3.Dot(N, L);
             float cosVR = Vector3.Dot(V, R);
@@ -133,7 +173,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
 
         public static void DrawTriangles(Graphics g, List<Triangle> mesh, Func<bool> isCancelled)
         {
-            for (int i  = 0; i < mesh.Count; i++) 
+            for (int i = 0; i < mesh.Count; i++)
             {
                 if (isCancelled()) break;
                 DrawTriangle(g, mesh[i], Pens.Magenta);

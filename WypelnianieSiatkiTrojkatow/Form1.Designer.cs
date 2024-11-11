@@ -523,6 +523,7 @@
             modifyNormalVecCheck.TabIndex = 41;
             modifyNormalVecCheck.Text = "Modyfikuj wektor normalny";
             modifyNormalVecCheck.UseVisualStyleBackColor = true;
+            modifyNormalVecCheck.CheckedChanged += modifyNormalVecCheck_CheckedChanged;
             // 
             // normalVecPathLabel
             // 
@@ -556,6 +557,7 @@
             normalVecFileBtn.TabIndex = 42;
             normalVecFileBtn.Text = "Wybierz plik";
             normalVecFileBtn.UseVisualStyleBackColor = true;
+            normalVecFileBtn.Click += normalVecFileBtn_Click;
             // 
             // label15
             // 

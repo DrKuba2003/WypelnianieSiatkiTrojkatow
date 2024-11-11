@@ -14,6 +14,8 @@ namespace WypelnianieSiatkiTrojkatow.Interfaces
         public float CalculateZ(float x, float y);
         public (float, float, float) GetBarycentricCoords(Vector3 P);
         public (float, float, float) GetBarycentricCoordsGlobal(Vector3 P);
-        public Vector3 GetNVector(float x, float y, float z);
+        public Vector3 GetNVector(float u, float v, float w);
+        public Vector3 GetPuVector(float u, float v, float w);
+        public Vector3 GetPvVector(float u, float v, float w);
     }
 }

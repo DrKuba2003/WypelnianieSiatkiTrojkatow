@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Numerics;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.Xml;
@@ -17,6 +18,7 @@ namespace WypelnianieSiatkiTrojkatow
     {
         private const string DEFAULT_PTS = "Resources\\Points\\punkty2.txt";
         private const string DEFAULT_TEXTURE = "Resources\\Textures\\pexels-steve-1509534.jpg";
+        private const string DEFAULT_NORMAL_VEC = "Resources\\NormalVectors\\dots.jpg";
 
         private int width, height;
         private BackgroundWorker drawBW;
@@ -24,23 +26,23 @@ namespace WypelnianieSiatkiTrojkatow
         private BufferedGraphicsContext bufferGContext;
         private BufferedGraphics bufferG;
 
-        private Vector3 lightPos;
+        private Vector3 lightPos; // todo move to model
         private double radiuss = 50;
         private double angles = 0;
         private bool isAnimationRunnig = false;
         private BackgroundWorker animationBW;
 
         private Model model;
-        private Bitmap texture;
         private Color[,] textureArr;
         private int textureWidth, textureHeight;
+
+        private Color[,] normalMapArr;
 
         public Form1()
         {
             InitializeComponent();
 
-            // set labels text
-            SetLabels();
+            SetLabelsText();
 
             width = panel1.Width; height = panel1.Height;
 
@@ -48,6 +50,7 @@ namespace WypelnianieSiatkiTrojkatow
             bufferGContext.MaximumBuffer = new Size(width + 1, height + 1);
             bufferG = bufferGContext.Allocate(panel1.CreateGraphics(),
                 new Rectangle(0, 0, width, height));
+
             // Zmiana ukladu wspolrzednych
             bufferG.Graphics.ScaleTransform(1, -1);
             bufferG.Graphics.TranslateTransform(width / 2, -height / 2);
@@ -56,6 +59,7 @@ namespace WypelnianieSiatkiTrojkatow
                 alfaAngleTrack.Value, betaAngleTrack.Value);
 
             LoadTexture(DEFAULT_TEXTURE);
+            LoadNormalVectors(DEFAULT_NORMAL_VEC);
 
             drawBW = new BackgroundWorker();
             drawBW.WorkerSupportsCancellation = true;
@@ -64,13 +68,29 @@ namespace WypelnianieSiatkiTrojkatow
 
             lightPos = new Vector3(50, 0, zTrack.Value);
             animationBW = new BackgroundWorker();
-            animationBW.DoWork += Animation;
+            animationBW.DoWork += animation_DoWork;
             animationBW.ProgressChanged += animationBw_ProgressChanged;
             animationBW.WorkerReportsProgress = true;
             animationBW.WorkerSupportsCancellation = true;
 
             Draw();
         }
+        private void SetLabelsText()
+        {
+            netPrecValue.Text = netPrecisionTrack.Value.ToString();
+            alfaValue.Text = alfaAngleTrack.Value.ToString();
+            betaValue.Text = betaAngleTrack.Value.ToString();
+            kdValue.Text = $"{kdTrack.Value}%";
+            ksValue.Text = $"{ksTrack.Value}%";
+            mValue.Text = mTrack.Value.ToString();
+            zValue.Text = zTrack.Value.ToString();
+            punktyPathValue.Text = DEFAULT_PTS.Split('\\')[2];
+            texturePathLabel.Text = DEFAULT_TEXTURE.Split('\\')[2];
+            normalVecPathLabel.Text = DEFAULT_NORMAL_VEC.Split('\\')[2];
+            PauseResumeBtn.Text = "Resume";
+        }
+
+        #region Drawing
 
         public void DrawToBuffer(Graphics g, Func<bool> isCancelled)
         {
@@ -99,13 +119,13 @@ namespace WypelnianieSiatkiTrojkatow
                     {
                         if (u is float.NaN) u = 0;
                         if (v is float.NaN) v = 0;
-                            
-                        u = 1 - u; 
+
+                        u = 1 - u;
                         //v = 1- v;
                         Color c = textureArr[
-                            u <= 0 ? 1 : u >= 1 ? textureWidth - 1 :
+                            u < 0 ? 0 : u >= 1 ? textureWidth - 1 :
                                 (int)(u * textureWidth),
-                            v <= 0 ? 1 : v >= 1 ? textureHeight - 1 :
+                            v < 0 ? 0 : v >= 1 ? textureHeight - 1 :
                                 (int)(v * textureHeight)
                             ];
                         return new Vector3(
@@ -114,6 +134,7 @@ namespace WypelnianieSiatkiTrojkatow
                             c.B / 255F);
                     };
                 }
+
                 Color lightColor = GetPanelColor(lightColorPanel);
                 var lightC = new Vector3(
                     lightColor.R / 255F,
@@ -124,6 +145,7 @@ namespace WypelnianieSiatkiTrojkatow
                 if (isCancelled()) return;
                 DrawingUtil.FillMesh(bmp, model.Mesh, kd, ks, m,
                     lightPos, lightC, ObjectColor, TranslatePtsToBitmap,
+                    modifyNormalVecCheck.Checked, normalMapArr,
                     isCancelled);
                 if (isCancelled()) return;
                 g.DrawImage(bmp, -width / 2, -height / 2);
@@ -141,6 +163,8 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void Draw()
         {
+            if (restartDrawing) return;
+
             if (drawBW.IsBusy)
             {
                 drawBW.CancelAsync();
@@ -165,8 +189,15 @@ namespace WypelnianieSiatkiTrojkatow
             else
                 panel1.Refresh();
         }
+        private (int, int) TranslatePtsToBitmap(int x, int y)
+            => (x + width / 2,
+                y + height / 2);
 
-        private void Animation(Object sender, DoWorkEventArgs e)
+        #endregion
+
+        #region Animation
+
+        private void animation_DoWork(Object sender, DoWorkEventArgs e)
         {
             double angleSpeed = 10,
                  rSpeed = 1;
@@ -186,51 +217,9 @@ namespace WypelnianieSiatkiTrojkatow
 
         private void animationBw_ProgressChanged(object sender, ProgressChangedEventArgs e) => Draw();
 
-        delegate int GetSliderValueCallback(System.Windows.Forms.TrackBar trackBar);
-        private int GetTrackBarValue(System.Windows.Forms.TrackBar trackBar)
-        {
-            if (trackBar.InvokeRequired)
-            {
-                GetSliderValueCallback cb = new GetSliderValueCallback(GetTrackBarValue);
-                return (int)trackBar.Invoke(cb, trackBar);
-            }
-            else
-            {
-                return (int)trackBar.Value;
-            }
-        }
+        #endregion
 
-        delegate Color GetPanelColorCallback(Panel panel);
-        private Color GetPanelColor(Panel panel)
-        {
-            if (panel.InvokeRequired)
-            {
-                GetPanelColorCallback cb = new GetPanelColorCallback(GetPanelColor);
-                return (Color)panel.Invoke(cb, panel);
-            }
-            else
-            {
-                return panel.BackColor;
-            }
-        }
-
-        private void SetLabels()
-        {
-            netPrecValue.Text = netPrecisionTrack.Value.ToString();
-            alfaValue.Text = alfaAngleTrack.Value.ToString();
-            betaValue.Text = betaAngleTrack.Value.ToString();
-            kdValue.Text = $"{kdTrack.Value}%";
-            ksValue.Text = $"{ksTrack.Value}%";
-            mValue.Text = mTrack.Value.ToString();
-            zValue.Text = zTrack.Value.ToString();
-            punktyPathValue.Text = DEFAULT_PTS.Split('\\')[2];
-            texturePathLabel.Text = DEFAULT_TEXTURE.Split('\\')[2];
-            PauseResumeBtn.Text = "Resume";
-        }
-
-        private (int, int) TranslatePtsToBitmap(int x, int y)
-            => (x + width / 2,
-                y + height / 2);
+        #region LoadData
 
         private void LoadTexture(string path)
         {
@@ -238,7 +227,7 @@ namespace WypelnianieSiatkiTrojkatow
             {
                 Image image = Image.FromStream(bmpStream);
 
-                texture = new Bitmap(image);
+                Bitmap texture = new Bitmap(image);
                 textureWidth = texture.Width;
                 textureHeight = texture.Height;
                 textureArr = new Color[textureWidth, textureHeight];
@@ -252,20 +241,36 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
-        private void drawControlPtsCheck_CheckedChanged(object sender, EventArgs e)
+        private void LoadNormalVectors(string path)
         {
-            Draw();
+            using (Stream bmpStream = File.Open(path, FileMode.Open))
+            {
+                Image image = Image.FromStream(bmpStream);
+
+                Bitmap normalMap = new Bitmap(image);
+                int normalMapWidth = normalMap.Width;
+                int normalMapHeight = normalMap.Height;
+                normalMapArr = new Color[normalMapWidth, normalMapHeight];
+                for (int y = 0; y < normalMapHeight; y++)
+                {
+                    for (int x = 0; x < normalMapWidth; x++)
+                    {
+                        normalMapArr[x, y] = normalMap.GetPixel(x, y);
+                    }
+                }
+            }
         }
 
-        private void drawTriangleNetCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            Draw();
-        }
+        #endregion
 
-        private void drawFillingCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            Draw();
-        }
+        #region ControlsEvents
+
+        private void drawControlPtsCheck_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void drawTriangleNetCheck_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void drawFillingCheck_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void modifyNormalVecCheck_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void solidColorRBtn_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void textureRBtn_CheckedChanged(object sender, EventArgs e) => Draw();
 
         private void netPrecisionTrack_Scroll(object sender, EventArgs e)
         {
@@ -316,41 +321,6 @@ namespace WypelnianieSiatkiTrojkatow
             Draw();
         }
 
-        private void solidColorRBtn_CheckedChanged(object sender, EventArgs e)
-        {
-            Draw();
-        }
-
-        private void textureRBtn_CheckedChanged(object sender, EventArgs e)
-        {
-            Draw();
-        }
-
-        private void pointFileBtn_Click(object sender, EventArgs e)
-        {
-            using (var fileDialog = new OpenFileDialog())
-            {
-                fileDialog.InitialDirectory = Directory.GetCurrentDirectory() +
-                    "\\Resources\\Points";
-                fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                fileDialog.FilterIndex = 0;
-                fileDialog.Multiselect = false;
-                fileDialog.RestoreDirectory = true;
-
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string path = fileDialog.FileName;
-                    var arr = path.Split('\\');
-                    punktyPathValue.Text = arr[arr.Length - 1];
-
-                    model.CalculateModel(path, netPrecisionTrack.Value,
-                        alfaAngleTrack.Value, betaAngleTrack.Value);
-
-                    Draw();
-                }
-            }
-        }
-
         private void PauseResumeBtn_Click(object sender, EventArgs e)
         {
             if (isAnimationRunnig)
@@ -399,6 +369,31 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
+        private void pointFileBtn_Click(object sender, EventArgs e)
+        {
+            using (var fileDialog = new OpenFileDialog())
+            {
+                fileDialog.InitialDirectory = Directory.GetCurrentDirectory() +
+                    "\\Resources\\Points";
+                fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                fileDialog.FilterIndex = 0;
+                fileDialog.Multiselect = false;
+                fileDialog.RestoreDirectory = true;
+
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string path = fileDialog.FileName;
+                    var arr = path.Split('\\');
+                    punktyPathValue.Text = arr[arr.Length - 1];
+
+                    model.CalculateModel(path, netPrecisionTrack.Value,
+                        alfaAngleTrack.Value, betaAngleTrack.Value);
+
+                    Draw();
+                }
+            }
+        }
+
         private void textureFileBtn_Click(object sender, EventArgs e)
         {
             using (var fileDialog = new OpenFileDialog())
@@ -423,6 +418,30 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
+        private void normalVecFileBtn_Click(object sender, EventArgs e)
+        {
+            using (var fileDialog = new OpenFileDialog())
+            {
+                fileDialog.InitialDirectory = Directory.GetCurrentDirectory() +
+                    "\\Resources\\NormalVectors";
+                fileDialog.Filter = "jpg files (*.jpg)|*.jpg|png files (*.png)|*.png|All files (*.*)|*.*";
+                fileDialog.FilterIndex = 0;
+                fileDialog.Multiselect = false;
+                fileDialog.RestoreDirectory = true;
+
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string path = fileDialog.FileName;
+                    var arr = path.Split('\\');
+                    normalVecPathLabel.Text = arr[arr.Length - 1];
+
+                    LoadNormalVectors(path);
+
+                    Draw();
+                }
+            }
+        }
+
         private void resetLightXYBtn_Click(object sender, EventArgs e)
         {
             radiuss = 50;
@@ -441,5 +460,40 @@ namespace WypelnianieSiatkiTrojkatow
         {
             bufferG.Render(e.Graphics);
         }
+
+        #endregion
+
+        #region ControlReadValue
+
+        delegate int GetSliderValueCallback(System.Windows.Forms.TrackBar trackBar);
+        private int GetTrackBarValue(System.Windows.Forms.TrackBar trackBar)
+        {
+            if (trackBar.InvokeRequired)
+            {
+                GetSliderValueCallback cb = new GetSliderValueCallback(GetTrackBarValue);
+                return (int)trackBar.Invoke(cb, trackBar);
+            }
+            else
+            {
+                return (int)trackBar.Value;
+            }
+        }
+
+        delegate Color GetPanelColorCallback(Panel panel);
+        private Color GetPanelColor(Panel panel)
+        {
+            if (panel.InvokeRequired)
+            {
+                GetPanelColorCallback cb = new GetPanelColorCallback(GetPanelColor);
+                return (Color)panel.Invoke(cb, panel);
+            }
+            else
+            {
+                return panel.BackColor;
+            }
+        }
+
+        #endregion
+
     }
 }

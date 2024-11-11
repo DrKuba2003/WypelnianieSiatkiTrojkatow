@@ -147,7 +147,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 Vector3 Pu = poly.GetPuVector(u, v, w);
                 Vector3 Pv = poly.GetPvVector(u, v, w);
                 Pu = Vector3.Normalize(Pu);
-                Pv = Vector3.Normalize(Pv);
+                Pv = Vector3.Normalize(Pv); //todo clean up normalization
                 N = new Vector3(
                     Nt.X * Pu.X + Nt.Y * Pv.X + Nt.Z * N.X,
                     Nt.X * Pu.Y + Nt.Y * Pv.Y + Nt.Z * N.Y,

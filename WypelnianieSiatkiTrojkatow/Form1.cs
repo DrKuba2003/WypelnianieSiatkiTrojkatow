@@ -32,6 +32,8 @@ namespace WypelnianieSiatkiTrojkatow
 
         private Model model;
         private Bitmap texture;
+        private Color[,] textureArr;
+        private int textureWidth, textureHeight;
 
         public Form1()
         {
@@ -98,11 +100,17 @@ namespace WypelnianieSiatkiTrojkatow
                         if (u is float.NaN) u = 0;
                         if (v is float.NaN) v = 0;
 
-                        Color c = texture.GetPixel(
-                            v <= 0 ? 1 : v >= 1 ? texture.Width - 1 :
-                                (int)(v * texture.Width),
-                            u <= 0 ? 1 : u >= 1 ? texture.Height - 1 :
-                                (int)(u * texture.Height));
+                        //Color c = texture.GetPixel(
+                        //    v <= 0 ? 1 : v >= 1 ? texture.Width - 1 :
+                        //        (int)(v * texture.Width),
+                        //    u <= 0 ? 1 : u >= 1 ? texture.Height - 1 :
+                        //        (int)(u * texture.Height));
+                        Color c = textureArr[
+                            v <= 0 ? 1 : v >= 1 ? textureWidth - 1 :
+                                (int)(v * textureWidth),
+                            u <= 0 ? 1 : u >= 1 ? textureHeight - 1 :
+                                (int)(u * textureHeight)
+                            ];
                         return new Vector3(
                             c.R / 255F,
                             c.G / 255F,
@@ -130,7 +138,8 @@ namespace WypelnianieSiatkiTrojkatow
             if (drawControlPtsCheck.Checked)
                 DrawingUtil.DrawControlPts(g, model.ControlVertexes, isCancelled);
 
-            g.FillEllipse(Brushes.Gold, new Rectangle((int)lightPos.X - 5, (int)lightPos.Y - 5, 10, 10));
+            //light 
+            //g.FillEllipse(Brushes.Gold, new Rectangle((int)lightPos.X - 5, (int)lightPos.Y - 5, 10, 10));
         }
 
         public void Draw()
@@ -162,7 +171,7 @@ namespace WypelnianieSiatkiTrojkatow
 
         private void Animation(Object sender, DoWorkEventArgs e)
         {
-            double angleSpeed = 5,
+            double angleSpeed = 10,
                  rSpeed = 1;
 
             while (!animationBW.CancellationPending && isAnimationRunnig)
@@ -233,6 +242,16 @@ namespace WypelnianieSiatkiTrojkatow
                 Image image = Image.FromStream(bmpStream);
 
                 texture = new Bitmap(image);
+                textureWidth = texture.Width;
+                textureHeight = texture.Height;
+                textureArr = new Color[textureWidth, textureHeight];
+                for (int y = 0; y < textureHeight; y++)
+                {
+                    for (int x = 0; x < textureWidth; x++)
+                    {
+                        textureArr[x, y] = texture.GetPixel(x, y);
+                    }
+                }
             }
         }
 
@@ -296,6 +315,7 @@ namespace WypelnianieSiatkiTrojkatow
         private void zTrack_Scroll(object sender, EventArgs e)
         {
             zValue.Text = zTrack.Value.ToString();
+            lightPos.Z = zTrack.Value;
             Draw();
         }
 

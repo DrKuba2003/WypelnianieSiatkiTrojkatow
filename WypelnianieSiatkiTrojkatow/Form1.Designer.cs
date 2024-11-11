@@ -359,12 +359,12 @@
             // 
             zTrack.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             zTrack.Location = new Point(1097, 258);
-            zTrack.Maximum = 1000;
+            zTrack.Maximum = 2000;
             zTrack.Name = "zTrack";
             zTrack.Size = new Size(198, 56);
             zTrack.TabIndex = 27;
             zTrack.TickStyle = TickStyle.None;
-            zTrack.Value = 100;
+            zTrack.Value = 500;
             zTrack.Scroll += zTrack_Scroll;
             // 
             // zValue

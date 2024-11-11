@@ -24,15 +24,28 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Func<bool> isCancelled)
         {
             using (var fastBitmap = drawArea.FastLock())
-                for (int i = 0; i < mesh.Count; i++) 
+            {
+                Triangle[] cp = new Triangle[mesh.Count];
+                mesh.CopyTo(cp);
+                Parallel.ForEach(cp, (triangle) =>
                 {
-                    if (isCancelled()) break;
-                    FillPolygon(fastBitmap, mesh[i], kd, ks, m,
+                    if (isCancelled()) return;
+                    FillPolygon(fastBitmap, triangle, kd, ks, m,
                         light, lightColor,
                         ObjectColor, CanvasTranslate,
                         isCancelled);
-                    if (isCancelled()) break;
-                }
+                    if (isCancelled()) return;
+                });
+                //for (int i = 0; i < mesh.Count; i++)  // todo parallel
+                //{
+                //    if (isCancelled()) break;
+                //    FillPolygon(fastBitmap, mesh[i], kd, ks, m,
+                //        light, lightColor,
+                //        ObjectColor, CanvasTranslate,
+                //        isCancelled);
+                //    if (isCancelled()) break;
+                //}
+            }
         }
 
         public static void FillPolygon(FastBitmap fastBitmap,
@@ -106,8 +119,8 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             N = Vector3.Normalize(N);
             L = Vector3.Normalize(L);
 
-            float cosNL = (float)Math.Cos(MathUtil.GetAngle(N, L));
-            double cosVR = Math.Cos(MathUtil.GetAngle(V, R));
+            float cosNL = Vector3.Dot(N, L);
+            float cosVR = Vector3.Dot(V, R);
             Vector3 I = kd * IL * IO * (cosNL >= 0 ? cosNL : 0) +
                 ks * IL * IO * (cosVR >= 0 ? (float)Math.Pow(cosVR, m) : 0);
 

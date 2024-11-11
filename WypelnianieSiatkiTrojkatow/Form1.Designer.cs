@@ -74,6 +74,7 @@
             label14 = new Label();
             normalVecFileBtn = new Button();
             label15 = new Label();
+            resetLightXYBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
@@ -390,7 +391,7 @@
             // PauseResumeBtn
             // 
             PauseResumeBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            PauseResumeBtn.Location = new Point(1147, 304);
+            PauseResumeBtn.Location = new Point(1088, 294);
             PauseResumeBtn.Name = "PauseResumeBtn";
             PauseResumeBtn.Size = new Size(94, 29);
             PauseResumeBtn.TabIndex = 29;
@@ -577,11 +578,23 @@
             label15.TabIndex = 45;
             label15.Text = "Punkty";
             // 
+            // resetLightXYBtn
+            // 
+            resetLightXYBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            resetLightXYBtn.Location = new Point(1197, 294);
+            resetLightXYBtn.Name = "resetLightXYBtn";
+            resetLightXYBtn.Size = new Size(94, 29);
+            resetLightXYBtn.TabIndex = 46;
+            resetLightXYBtn.Text = "Reset R";
+            resetLightXYBtn.UseVisualStyleBackColor = true;
+            resetLightXYBtn.Click += resetLightXYBtn_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(resetLightXYBtn);
             Controls.Add(label15);
             Controls.Add(normalVecPathLabel);
             Controls.Add(label14);
@@ -633,6 +646,7 @@
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Wypelnianie siatki trojkatow";
+            FormClosed += Form1_FormClosed;
             ((System.ComponentModel.ISupportInitialize)Canvas).EndInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).EndInit();
@@ -693,5 +707,6 @@
         private Label label14;
         private Button normalVecFileBtn;
         private Label label15;
+        private Button resetLightXYBtn;
     }
 }

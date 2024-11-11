@@ -99,17 +99,14 @@ namespace WypelnianieSiatkiTrojkatow
                     {
                         if (u is float.NaN) u = 0;
                         if (v is float.NaN) v = 0;
-
-                        //Color c = texture.GetPixel(
-                        //    v <= 0 ? 1 : v >= 1 ? texture.Width - 1 :
-                        //        (int)(v * texture.Width),
-                        //    u <= 0 ? 1 : u >= 1 ? texture.Height - 1 :
-                        //        (int)(u * texture.Height));
+                            
+                        u = 1 - u; 
+                        //v = 1- v;
                         Color c = textureArr[
-                            v <= 0 ? 1 : v >= 1 ? textureWidth - 1 :
-                                (int)(v * textureWidth),
-                            u <= 0 ? 1 : u >= 1 ? textureHeight - 1 :
-                                (int)(u * textureHeight)
+                            u <= 0 ? 1 : u >= 1 ? textureWidth - 1 :
+                                (int)(u * textureWidth),
+                            v <= 0 ? 1 : v >= 1 ? textureHeight - 1 :
+                                (int)(v * textureHeight)
                             ];
                         return new Vector3(
                             c.R / 255F,

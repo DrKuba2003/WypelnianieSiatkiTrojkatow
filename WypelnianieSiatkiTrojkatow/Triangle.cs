@@ -50,10 +50,6 @@ namespace WypelnianieSiatkiTrojkatow
 
         private (int, Edge)? GetEdgeET(Vertex v1, Vertex v2)
         {
-            // private so no need
-            //if ((v1 != V1 && v1 != V2 && v1 != V3) ||
-            //    (v2 != V1 && v2 != V2 && v2 != V3)) return null;
-
             if (Math.Abs(v1.Y - v2.Y) < 1) return null;
 
             float delta = (v2.X - v1.X) / (v2.Y - v1.Y);
@@ -85,7 +81,7 @@ namespace WypelnianieSiatkiTrojkatow
         public (float, float, float) GetBarycentricCoords(Vector3 P)
         {
             double area = GetArea();
-            float u = (float)(Triangle.GetTriangleArea(V1.Par, V2.Par, P) / area);
+            float u = (float)(Triangle.GetTriangleArea(V2.Par, V3.Par, P) / area);
             float v = (float)(Triangle.GetTriangleArea(V1.Par, V3.Par, P) / area);
             float w = 1 - u - v;
             return (u, v, w);

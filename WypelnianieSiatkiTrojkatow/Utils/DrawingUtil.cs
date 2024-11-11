@@ -16,24 +16,31 @@ namespace WypelnianieSiatkiTrojkatow.Utils
     {
         private static readonly Pen CONTROL_NET_PEN = new Pen(Brushes.DarkBlue, 2);
 
-        public static void FillMesh(Bitmap drawArea, List<Triangle> triangles,
+        public static void FillMesh(Bitmap drawArea, List<Triangle> mesh,
             float kd, float ks, int m,
             Vector3 light, Vector3 lightColor,
             Func<float, float, float, Vector3> ObjectColor,
-            Func<int, int, (int, int)> CanvasTranslate)
+            Func<int, int, (int, int)> CanvasTranslate,
+            Func<bool> isCancelled)
         {
             using (var fastBitmap = drawArea.FastLock())
-                foreach (var t in triangles)
-                    FillPolygon(fastBitmap, t, kd, ks, m,
+                for (int i = 0; i < mesh.Count; i++) 
+                {
+                    if (isCancelled()) break;
+                    FillPolygon(fastBitmap, mesh[i], kd, ks, m,
                         light, lightColor,
-                        ObjectColor, CanvasTranslate);
+                        ObjectColor, CanvasTranslate,
+                        isCancelled);
+                    if (isCancelled()) break;
+                }
         }
 
         public static void FillPolygon(FastBitmap fastBitmap,
             IFillablePolygon poly, float kd, float ks, int m,
             Vector3 light, Vector3 lightColor,
             Func<float, float, float, Vector3> ObjectColor,
-            Func<int, int, (int, int)> CanvasTranslate)
+            Func<int, int, (int, int)> CanvasTranslate,
+            Func<bool> isCancelled)
         {
             EdgesBucketSorted ET = poly.GetET();
             if (ET.IsEmpty()) return;
@@ -111,10 +118,13 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 );
         }
 
-        public static void DrawTriangles(Graphics g, List<Triangle> mesh)
+        public static void DrawTriangles(Graphics g, List<Triangle> mesh, Func<bool> isCancelled)
         {
-            foreach (var t in mesh)
-                DrawTriangle(g, t, Pens.Magenta);
+            for (int i  = 0; i < mesh.Count; i++) 
+            {
+                if (isCancelled()) break;
+                DrawTriangle(g, mesh[i], Pens.Magenta);
+            }
         }
 
         public static void DrawTriangle(Graphics g, Triangle t, Pen p)
@@ -132,12 +142,13 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 new Point((int)t.V2.X, (int)t.V2.Y));
         }
 
-        public static void DrawControlPts(Graphics g, Vertex[,] ControlVertexes)
+        public static void DrawControlPts(Graphics g, Vertex[,] ControlVertexes, Func<bool> isCancelled)
         {
             for (int j = 0; j < 4; j++)
             {
                 for (int i = 0; i < 4; i++)
                 {
+                    if (isCancelled()) break;
                     Vertex v = ControlVertexes[j, i];
                     if (j < 3)
                         g.DrawLine(CONTROL_NET_PEN,
@@ -153,12 +164,17 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             }
         }
 
-        public static void DrawPrecisionPts(Graphics g, Vertex[,]? PrecisionVertexes)
+        public static void DrawPrecisionPts(Graphics g, Vertex[,]? PrecisionVertexes, Func<bool> isCancelled)
         {
             if (PrecisionVertexes == null) return;
 
-            foreach (var v in PrecisionVertexes)
-                g.FillEllipse(Brushes.Blue, v.X - 5, v.Y - 5, 10, 10);
+            for (int j = 0; j < PrecisionVertexes.GetLength(0); j++)
+                for (int i = 0; i < PrecisionVertexes.GetLength(1); i++)
+                {
+                    if (isCancelled()) break;
+                    var v = PrecisionVertexes[j, i];
+                    g.FillEllipse(Brushes.Blue, v.X - 5, v.Y - 5, 10, 10);
+                }
         }
     }
 }

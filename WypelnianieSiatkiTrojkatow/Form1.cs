@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.Xml;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using WypelnianieSiatkiTrojkatow.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -17,13 +18,18 @@ namespace WypelnianieSiatkiTrojkatow
         private const string DEFAULT_PTS = "Resources\\Points\\punkty2.txt";
         private const string DEFAULT_TEXTURE = "Resources\\Textures\\pexels-steve-1509534.jpg";
 
+        private int width, height;
+        private BackgroundWorker drawBW;
+        private bool restartDrawing = false;
+        private BufferedGraphicsContext bufferGContext;
+        private BufferedGraphics bufferG;
+
         private Vector3 lightPos;
         private double radiuss = 50;
+        private double angles = 0;
         private bool isAnimationRunnig = false;
-        private BackgroundWorker animationBw;
+        private BackgroundWorker animationBW;
 
-        private Bitmap drawArea;
-        private Bitmap buffer;
         private Model model;
         private Bitmap texture;
 
@@ -34,98 +40,132 @@ namespace WypelnianieSiatkiTrojkatow
             // set labels text
             SetLabels();
 
-            drawArea = new Bitmap(Canvas.Size.Width, Canvas.Size.Height);
-            Canvas.Image = drawArea;
+            width = panel1.Width; height = panel1.Height;
+
+            bufferGContext = BufferedGraphicsManager.Current;
+            bufferGContext.MaximumBuffer = new Size(width + 1, height + 1);
+            bufferG = bufferGContext.Allocate(panel1.CreateGraphics(),
+                new Rectangle(0, 0, width, height));
+            // Zmiana ukladu wspolrzednych
+            bufferG.Graphics.ScaleTransform(1, -1);
+            bufferG.Graphics.TranslateTransform(width / 2, -height / 2);
 
             model = new Model(DEFAULT_PTS, netPrecisionTrack.Value,
                 alfaAngleTrack.Value, betaAngleTrack.Value);
 
             LoadTexture(DEFAULT_TEXTURE);
 
+            drawBW = new BackgroundWorker();
+            drawBW.WorkerSupportsCancellation = true;
+            drawBW.DoWork += draw_DoWork;
+            drawBW.RunWorkerCompleted += drawBw_Completed;
+
             lightPos = new Vector3(50, 0, zTrack.Value);
-            animationBw = new BackgroundWorker();
-            animationBw.DoWork += Animation;
-            animationBw.ProgressChanged += animationBw_ProgressChanged;
-            animationBw.WorkerReportsProgress = true;
+            animationBW = new BackgroundWorker();
+            animationBW.DoWork += Animation;
+            animationBW.ProgressChanged += animationBw_ProgressChanged;
+            animationBW.WorkerReportsProgress = true;
+            animationBW.WorkerSupportsCancellation = true;
 
             Draw();
         }
 
-        public void Draw(Bitmap? bitmap=null)
+        public void DrawToBuffer(Graphics g, Func<bool> isCancelled)
         {
-            Bitmap b = bitmap is null ? drawArea : bitmap;
-            using (Graphics g = Graphics.FromImage(b))
+            if (isCancelled()) return;
+            g.Clear(Color.WhiteSmoke);
+
+            if (drawFillingCheck.Checked)
             {
-                g.Clear(Color.WhiteSmoke);
-
-                // Zmiana ukladu wspolrzednych
-                g.ScaleTransform(1, -1);
-                g.TranslateTransform(Canvas.Width / 2, -Canvas.Height / 2);
-
-                if (drawFillingCheck.Checked)
+                if (isCancelled()) return;
+                float kd = GetTrackBarValue(kdTrack) / 100F;
+                float ks = GetTrackBarValue(ksTrack) / 100F;
+                int m = GetTrackBarValue(mTrack);
+                Func<float, float, float, Vector3> ObjectColor;
+                if (solidColorRBtn.Checked)
                 {
-                    float kd = GetTrackBarValue(kdTrack) / 100F;
-                    float ks = GetTrackBarValue(ksTrack) / 100F;
-                    int m = GetTrackBarValue(mTrack);
-                    Func<float, float, float, Vector3> ObjectColor;
-                    if (solidColorRBtn.Checked)
-                    {
-                        Color objectColor = GetPanelColor(objectColorPanel);
-                        var objectC = new Vector3(
-                            objectColor.R / 255F,
-                            objectColor.G / 255F,
-                            objectColor.B / 255F);
-                        ObjectColor = (u, v, w) => objectC;
-                    }
-                    else
-                    {
-                        ObjectColor = (u, v, w) =>
-                        {
-                            if (u is float.NaN) u = 0;
-                            if (v is float.NaN) v = 0;
-
-                            Color c = texture.GetPixel(
-                                v <= 0 ? 1 : v >= 1 ? texture.Width - 1 :
-                                    (int)(v * texture.Width),
-                                u <= 0 ? 1 : u >= 1 ? texture.Height - 1 :
-                                    (int)(u * texture.Height));
-                            return new Vector3(
-                                c.R / 255F,
-                                c.G / 255F,
-                                c.B / 255F);
-                        };
-                    }
-                    Color lightColor = GetPanelColor(lightColorPanel);
-                    var lightC = new Vector3(
-                        lightColor.R / 255F,
-                        lightColor.G / 255F,
-                        lightColor.B / 255F);
-
-                    DrawingUtil.FillMesh(drawArea, model.Mesh, kd, ks, m,
-                        lightPos, lightC, ObjectColor, TranslatePtsToBitmap);
+                    Color objectColor = GetPanelColor(objectColorPanel);
+                    var objectC = new Vector3(
+                        objectColor.R / 255F,
+                        objectColor.G / 255F,
+                        objectColor.B / 255F);
+                    ObjectColor = (u, v, w) => objectC;
                 }
+                else
+                {
+                    ObjectColor = (u, v, w) =>
+                    {
+                        if (u is float.NaN) u = 0;
+                        if (v is float.NaN) v = 0;
 
-                if (drawTriangleNetCheck.Checked)
-                    DrawingUtil.DrawTriangles(g, model.Mesh);
+                        Color c = texture.GetPixel(
+                            v <= 0 ? 1 : v >= 1 ? texture.Width - 1 :
+                                (int)(v * texture.Width),
+                            u <= 0 ? 1 : u >= 1 ? texture.Height - 1 :
+                                (int)(u * texture.Height));
+                        return new Vector3(
+                            c.R / 255F,
+                            c.G / 255F,
+                            c.B / 255F);
+                    };
+                }
+                Color lightColor = GetPanelColor(lightColorPanel);
+                var lightC = new Vector3(
+                    lightColor.R / 255F,
+                    lightColor.G / 255F,
+                    lightColor.B / 255F);
 
-                if (drawControlPtsCheck.Checked)
-                    DrawingUtil.DrawControlPts(g, model.ControlVertexes);
-
-                g.FillEllipse(Brushes.Gold, new Rectangle((int)lightPos.X - 5, (int)lightPos.Y - 5, 10, 10));
+                Bitmap bmp = new Bitmap(width, height);
+                if (isCancelled()) return;
+                DrawingUtil.FillMesh(bmp, model.Mesh, kd, ks, m,
+                    lightPos, lightC, ObjectColor, TranslatePtsToBitmap,
+                    isCancelled);
+                if (isCancelled()) return;
+                g.DrawImage(bmp, -width / 2, -height / 2);
             }
 
-            if (bitmap is not null)
-                drawArea = buffer; 
-            CanvasRefresh();
+            if (drawTriangleNetCheck.Checked)
+                DrawingUtil.DrawTriangles(g, model.Mesh, isCancelled);
+
+            if (drawControlPtsCheck.Checked)
+                DrawingUtil.DrawControlPts(g, model.ControlVertexes, isCancelled);
+
+            g.FillEllipse(Brushes.Gold, new Rectangle((int)lightPos.X - 5, (int)lightPos.Y - 5, 10, 10));
+        }
+
+        public void Draw()
+        {
+            if (drawBW.IsBusy)
+            {
+                drawBW.CancelAsync();
+                restartDrawing = true;
+            }
+            else
+                drawBW.RunWorkerAsync();
+        }
+
+        private void draw_DoWork(Object sender, DoWorkEventArgs e)
+        {
+            DrawToBuffer(bufferG.Graphics, () => drawBW.CancellationPending);
+        }
+
+        private void drawBw_Completed(Object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (restartDrawing)
+            {
+                drawBW.RunWorkerAsync();
+                restartDrawing = false;
+            }
+            else
+                panel1.Refresh();
         }
 
         private void Animation(Object sender, DoWorkEventArgs e)
         {
-            double angles = 0,
-                 angleSpeed = 5,
+            double angleSpeed = 5,
                  rSpeed = 1;
 
-            while (isAnimationRunnig)
+            while (!animationBW.CancellationPending && isAnimationRunnig)
             {
                 angles = (angles + angleSpeed) % 360;
                 radiuss += rSpeed;
@@ -133,8 +173,8 @@ namespace WypelnianieSiatkiTrojkatow
                 lightPos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(angles)));
                 lightPos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(angles)));
 
-                animationBw.ReportProgress(0);
-                Thread.Sleep(200);
+                animationBW.ReportProgress(0);
+                Thread.Sleep(1000);
             }
         }
 
@@ -168,20 +208,6 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
-        delegate void GetCanvasRefreshCallback();
-        private void CanvasRefresh()
-        {
-            if (Canvas.InvokeRequired)
-            {
-                GetCanvasRefreshCallback cb = new GetCanvasRefreshCallback(CanvasRefresh);
-                Canvas.Invoke(cb);
-            }
-            else
-            {
-                Canvas.Refresh();
-            }
-        }
-
         private void SetLabels()
         {
             netPrecValue.Text = netPrecisionTrack.Value.ToString();
@@ -197,8 +223,8 @@ namespace WypelnianieSiatkiTrojkatow
         }
 
         private (int, int) TranslatePtsToBitmap(int x, int y)
-            => (x + Canvas.Width / 2,
-                -y + Canvas.Height / 2);
+            => (x + width / 2,
+                y + height / 2);
 
         private void LoadTexture(string path)
         {
@@ -314,12 +340,13 @@ namespace WypelnianieSiatkiTrojkatow
             {
                 PauseResumeBtn.Text = "Resume";
                 isAnimationRunnig = false;
+                animationBW.CancelAsync();
             }
             else
             {
                 PauseResumeBtn.Text = "Pause";
                 isAnimationRunnig = true;
-                animationBw.RunWorkerAsync();
+                animationBW.RunWorkerAsync();
             }
         }
 
@@ -382,11 +409,20 @@ namespace WypelnianieSiatkiTrojkatow
         private void resetLightXYBtn_Click(object sender, EventArgs e)
         {
             radiuss = 50;
+            angles = 0;
+            lightPos = new Vector3(50, 0, zTrack.Value);
+            Draw();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             isAnimationRunnig = false;
+            Thread.Sleep(100);
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            bufferG.Render(e.Graphics);
         }
     }
 }

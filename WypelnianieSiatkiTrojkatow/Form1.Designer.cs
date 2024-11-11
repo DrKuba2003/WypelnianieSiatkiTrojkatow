@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Canvas = new PictureBox();
             drawControlPtsCheck = new CheckBox();
             drawTriangleNetCheck = new CheckBox();
             drawFillingCheck = new CheckBox();
@@ -75,7 +74,7 @@
             normalVecFileBtn = new Button();
             label15 = new Label();
             resetLightXYBtn = new Button();
-            ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
+            panel1 = new DoubleBufferedPanel();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).BeginInit();
@@ -84,16 +83,6 @@
             ((System.ComponentModel.ISupportInitialize)mTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)zTrack).BeginInit();
             SuspendLayout();
-            // 
-            // Canvas
-            // 
-            Canvas.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            Canvas.BackColor = SystemColors.ControlLightLight;
-            Canvas.Location = new Point(207, 1);
-            Canvas.Name = "Canvas";
-            Canvas.Size = new Size(875, 753);
-            Canvas.TabIndex = 0;
-            Canvas.TabStop = false;
             // 
             // drawControlPtsCheck
             // 
@@ -589,6 +578,15 @@
             resetLightXYBtn.UseVisualStyleBackColor = true;
             resetLightXYBtn.Click += resetLightXYBtn_Click;
             // 
+            // panel1
+            // 
+            panel1.BackColor = Color.White;
+            panel1.Location = new Point(207, 1);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(875, 754);
+            panel1.TabIndex = 47;
+            panel1.Paint += panel1_Paint;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -639,15 +637,14 @@
             Controls.Add(drawFillingCheck);
             Controls.Add(drawTriangleNetCheck);
             Controls.Add(drawControlPtsCheck);
-            Controls.Add(Canvas);
             Controls.Add(netPrecisionTrack);
+            Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Wypelnianie siatki trojkatow";
             FormClosed += Form1_FormClosed;
-            ((System.ComponentModel.ISupportInitialize)Canvas).EndInit();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).EndInit();
@@ -660,8 +657,6 @@
         }
 
         #endregion
-
-        private PictureBox Canvas;
         private CheckBox drawControlPtsCheck;
         private CheckBox drawTriangleNetCheck;
         private CheckBox drawFillingCheck;
@@ -708,5 +703,6 @@
         private Button normalVecFileBtn;
         private Label label15;
         private Button resetLightXYBtn;
+        private DoubleBufferedPanel panel1;
     }
 }

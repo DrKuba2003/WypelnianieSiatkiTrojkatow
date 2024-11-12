@@ -17,17 +17,26 @@ namespace WypelnianieSiatkiTrojkatow
         public List<Triangle> Mesh = new();
         public Vector3 lightPos;
 
+        public int alfa, beta, m;
+        public float kd, ks;
+
         private double radiuss;
         private double angles;
         private bool isAnimationRunnig = false;
         private BackgroundWorker animationBW;
 
-        // todo faster animation
 
-        public Model(string path, int netP, int alfa, int beta, int lightZ,
+        public Model(string path, int netP, int alfa, int beta,
+            float kd, float ks, int m, int lightZ,
             ProgressChangedEventHandler animationBw_ProgressChanged)
         {
-            CalculateModel(path, netP, alfa, beta);
+            this.alfa = alfa;
+            this.beta = beta;
+            this.kd = kd;
+            this.ks = ks;
+            this.m = m;
+
+            CalculateModel(path, netP);
 
             lightPos = new Vector3();
             ResetLightPos();
@@ -143,7 +152,7 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
-        public void RotateVertexes(int alfa, int beta)
+        public void RotateVertexes()
         {
             if (PrecisionVertexes is null) return;
 
@@ -160,11 +169,11 @@ namespace WypelnianieSiatkiTrojkatow
             }
         }
 
-        public void CalculateModel(string path, int netP, int alfa, int beta)
+        public void CalculateModel(string path, int netP)
         {
             LoadControlPts(path);
             LoadMesh(netP);
-            RotateVertexes(alfa, beta);
+            RotateVertexes();
         }
 
         public void ResetLightPos()

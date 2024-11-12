@@ -17,20 +17,14 @@ namespace WypelnianieSiatkiTrojkatow
     public partial class Form1 : Form
     {
         private const string DEFAULT_PTS = "Resources\\Points\\punkty2.txt";
-        private const string DEFAULT_TEXTURE = "Resources\\Textures\\pexels-steve-1509534.jpg";
-        private const string DEFAULT_NORMAL_VEC = "Resources\\NormalVectors\\dots.jpg";
+        private const string DEFAULT_TEXTURE = "Resources\\Textures\\154.jpg";
+        private const string DEFAULT_NORMAL_VEC = "Resources\\NormalVectors\\154_norm.jpg";
 
         private int width, height;
         private BackgroundWorker drawBW;
         private bool restartDrawing = false;
         private BufferedGraphicsContext bufferGContext;
         private BufferedGraphics bufferG;
-
-        private Vector3 lightPos; // todo move to model
-        private double radiuss = 50;
-        private double angles = 0;
-        private bool isAnimationRunnig = false;
-        private BackgroundWorker animationBW;
 
         private Model model;
         private Color[,] textureArr;
@@ -56,7 +50,8 @@ namespace WypelnianieSiatkiTrojkatow
             bufferG.Graphics.TranslateTransform(width / 2, -height / 2);
 
             model = new Model(DEFAULT_PTS, netPrecisionTrack.Value,
-                alfaAngleTrack.Value, betaAngleTrack.Value);
+                alfaAngleTrack.Value, betaAngleTrack.Value,
+                zTrack.Value, animationBw_ProgressChanged);
 
             LoadTexture(DEFAULT_TEXTURE);
             LoadNormalVectors(DEFAULT_NORMAL_VEC);
@@ -65,13 +60,6 @@ namespace WypelnianieSiatkiTrojkatow
             drawBW.WorkerSupportsCancellation = true;
             drawBW.DoWork += draw_DoWork;
             drawBW.RunWorkerCompleted += drawBw_Completed;
-
-            lightPos = new Vector3(50, 0, zTrack.Value);
-            animationBW = new BackgroundWorker();
-            animationBW.DoWork += animation_DoWork;
-            animationBW.ProgressChanged += animationBw_ProgressChanged;
-            animationBW.WorkerReportsProgress = true;
-            animationBW.WorkerSupportsCancellation = true;
 
             Draw();
         }
@@ -144,7 +132,7 @@ namespace WypelnianieSiatkiTrojkatow
                 Bitmap bmp = new Bitmap(width, height);
                 if (isCancelled()) return;
                 DrawingUtil.FillMesh(bmp, model.Mesh, kd, ks, m,
-                    lightPos, lightC, ObjectColor, TranslatePtsToBitmap,
+                    model.lightPos, lightC, ObjectColor, TranslatePtsToBitmap,
                     modifyNormalVecCheck.Checked, normalMapArr,
                     isCancelled);
                 if (isCancelled()) return;
@@ -196,24 +184,6 @@ namespace WypelnianieSiatkiTrojkatow
         #endregion
 
         #region Animation
-
-        private void animation_DoWork(Object sender, DoWorkEventArgs e)
-        {
-            double angleSpeed = 10,
-                 rSpeed = 1;
-
-            while (!animationBW.CancellationPending && isAnimationRunnig)
-            {
-                angles = (angles + angleSpeed) % 360;
-                radiuss += rSpeed;
-
-                lightPos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(angles)));
-                lightPos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(angles)));
-
-                animationBW.ReportProgress(0);
-                Thread.Sleep(1000);
-            }
-        }
 
         private void animationBw_ProgressChanged(object sender, ProgressChangedEventArgs e) => Draw();
 
@@ -317,24 +287,14 @@ namespace WypelnianieSiatkiTrojkatow
         private void zTrack_Scroll(object sender, EventArgs e)
         {
             zValue.Text = zTrack.Value.ToString();
-            lightPos.Z = zTrack.Value;
+            model.SetLightZ(zTrack.Value);
             Draw();
         }
 
         private void PauseResumeBtn_Click(object sender, EventArgs e)
         {
-            if (isAnimationRunnig)
-            {
-                PauseResumeBtn.Text = "Resume";
-                isAnimationRunnig = false;
-                animationBW.CancelAsync();
-            }
-            else
-            {
-                PauseResumeBtn.Text = "Pause";
-                isAnimationRunnig = true;
-                animationBW.RunWorkerAsync();
-            }
+            bool isAnimationRunning = model.PauseResumeAnimation();
+            PauseResumeBtn.Text = isAnimationRunning ? "Pause" : "Resume";
         }
 
         private void pickLightColorBtn_Click(object sender, EventArgs e)
@@ -425,7 +385,7 @@ namespace WypelnianieSiatkiTrojkatow
                 fileDialog.InitialDirectory = Directory.GetCurrentDirectory() +
                     "\\Resources\\NormalVectors";
                 fileDialog.Filter = "jpg files (*.jpg)|*.jpg|png files (*.png)|*.png|All files (*.*)|*.*";
-                fileDialog.FilterIndex = 0;
+                fileDialog.FilterIndex = 4;
                 fileDialog.Multiselect = false;
                 fileDialog.RestoreDirectory = true;
 
@@ -444,15 +404,16 @@ namespace WypelnianieSiatkiTrojkatow
 
         private void resetLightXYBtn_Click(object sender, EventArgs e)
         {
-            radiuss = 50;
-            angles = 0;
-            lightPos = new Vector3(50, 0, zTrack.Value);
+            model.ResetLightPos();
+
             Draw();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            isAnimationRunnig = false;
+            model.StopAnimation();
+            restartDrawing = false;
+            drawBW.CancelAsync();
             Thread.Sleep(100);
         }
 

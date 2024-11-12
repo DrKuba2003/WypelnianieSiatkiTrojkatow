@@ -32,6 +32,11 @@ namespace WypelnianieSiatkiTrojkatow
 
         private Color[,] normalMapArr;
 
+        // todo add show drawing in progrss and drawing restart btn
+        // todo texture map like normal map
+        // todo add drawing z filtering?
+        // todo przenies do zmiennych
+
         public Form1()
         {
             InitializeComponent();
@@ -145,8 +150,9 @@ namespace WypelnianieSiatkiTrojkatow
             if (drawControlPtsCheck.Checked)
                 DrawingUtil.DrawControlPts(g, model.ControlVertexes, isCancelled);
 
-            //light 
-            //g.FillEllipse(Brushes.Gold, new Rectangle((int)lightPos.X - 5, (int)lightPos.Y - 5, 10, 10));
+            if (drawLightPosCheck.Checked)
+                g.FillEllipse(Brushes.Gold, new Rectangle((int)model.lightPos.X - 5,
+                    (int)model.lightPos.Y - 5, 10, 10));
         }
 
         public void Draw()
@@ -177,6 +183,7 @@ namespace WypelnianieSiatkiTrojkatow
             else
                 panel1.Refresh();
         }
+
         private (int, int) TranslatePtsToBitmap(int x, int y)
             => (x + width / 2,
                 y + height / 2);
@@ -241,6 +248,7 @@ namespace WypelnianieSiatkiTrojkatow
         private void modifyNormalVecCheck_CheckedChanged(object sender, EventArgs e) => Draw();
         private void solidColorRBtn_CheckedChanged(object sender, EventArgs e) => Draw();
         private void textureRBtn_CheckedChanged(object sender, EventArgs e) => Draw();
+        private void drawLightPosCheck_CheckedChanged(object sender, EventArgs e) => Draw();
 
         private void netPrecisionTrack_Scroll(object sender, EventArgs e)
         {

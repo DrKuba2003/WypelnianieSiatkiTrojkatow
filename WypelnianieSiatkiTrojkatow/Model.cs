@@ -22,6 +22,8 @@ namespace WypelnianieSiatkiTrojkatow
         private bool isAnimationRunnig = false;
         private BackgroundWorker animationBW;
 
+        // todo faster animation
+
         public Model(string path, int netP, int alfa, int beta, int lightZ,
             ProgressChangedEventHandler animationBw_ProgressChanged)
         {
@@ -39,8 +41,8 @@ namespace WypelnianieSiatkiTrojkatow
         }
         private void animation_DoWork(Object sender, DoWorkEventArgs e)
         {
-            double angleSpeed = 10,
-                 rSpeed = 1;
+            double angleSpeed = 2,
+                 rSpeed = 0.2;
 
             while (!animationBW.CancellationPending && isAnimationRunnig)
             {
@@ -51,7 +53,7 @@ namespace WypelnianieSiatkiTrojkatow
                 lightPos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(angles)));
 
                 animationBW.ReportProgress(0);
-                Thread.Sleep(1000);
+                Thread.Sleep(200);
             }
         }
 

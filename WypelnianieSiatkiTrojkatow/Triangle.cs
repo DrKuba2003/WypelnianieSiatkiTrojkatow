@@ -80,10 +80,8 @@ namespace WypelnianieSiatkiTrojkatow
             float w = 1 - u - v;
             return (u, v, w);
         }
-        public (float, float, float) GetBarycentricCoordsGlobal(Vector3 P)
+        public (float, float, float) GetBarycentricCoordsGlobal(float u, float v, float w)
         {
-            (float u, float v, float w) = GetBarycentricCoords(P);
-
             float uGlobal = u * V1.u + v * V2.u + w * V3.u;
             float vGlobal = u * V1.v + v * V2.v + w * V3.v;
             float wGlobal = 1 - uGlobal - vGlobal;

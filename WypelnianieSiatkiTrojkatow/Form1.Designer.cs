@@ -75,6 +75,7 @@
             label15 = new Label();
             resetLightXYBtn = new Button();
             panel1 = new DoubleBufferedPanel();
+            drawLightPosCheck = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).BeginInit();
@@ -341,9 +342,9 @@
             label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
             label8.Location = new Point(1088, 206);
             label8.Name = "label8";
-            label8.Size = new Size(83, 20);
+            label8.Size = new Size(74, 20);
             label8.TabIndex = 25;
-            label8.Text = "Animation";
+            label8.Text = "Animacja";
             // 
             // label9
             // 
@@ -393,7 +394,7 @@
             label10.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label10.AutoSize = true;
             label10.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label10.Location = new Point(1088, 345);
+            label10.Location = new Point(1088, 353);
             label10.Name = "label10";
             label10.Size = new Size(100, 20);
             label10.TabIndex = 30;
@@ -402,7 +403,7 @@
             // pickLightColorBtn
             // 
             pickLightColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pickLightColorBtn.Location = new Point(1219, 368);
+            pickLightColorBtn.Location = new Point(1225, 379);
             pickLightColorBtn.Name = "pickLightColorBtn";
             pickLightColorBtn.Size = new Size(66, 36);
             pickLightColorBtn.TabIndex = 31;
@@ -415,7 +416,7 @@
             lightColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lightColorPanel.BackColor = Color.White;
             lightColorPanel.BorderStyle = BorderStyle.FixedSingle;
-            lightColorPanel.Location = new Point(1106, 368);
+            lightColorPanel.Location = new Point(1106, 379);
             lightColorPanel.Name = "lightColorPanel";
             lightColorPanel.Size = new Size(83, 36);
             lightColorPanel.TabIndex = 32;
@@ -589,11 +590,23 @@
             panel1.TabIndex = 47;
             panel1.Paint += panel1_Paint;
             // 
+            // drawLightPosCheck
+            // 
+            drawLightPosCheck.AutoSize = true;
+            drawLightPosCheck.Location = new Point(1094, 326);
+            drawLightPosCheck.Name = "drawLightPosCheck";
+            drawLightPosCheck.Size = new Size(170, 24);
+            drawLightPosCheck.TabIndex = 48;
+            drawLightPosCheck.Text = "Rysuj pozycje swiatla";
+            drawLightPosCheck.UseVisualStyleBackColor = true;
+            drawLightPosCheck.CheckedChanged += drawLightPosCheck_CheckedChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(drawLightPosCheck);
             Controls.Add(resetLightXYBtn);
             Controls.Add(label15);
             Controls.Add(normalVecPathLabel);
@@ -706,5 +719,6 @@
         private Label label15;
         private Button resetLightXYBtn;
         private DoubleBufferedPanel panel1;
+        private CheckBox drawLightPosCheck;
     }
 }

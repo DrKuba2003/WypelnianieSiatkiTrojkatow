@@ -115,7 +115,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             (float u, float v, float w) =
                 poly.GetBarycentricCoords(new Vector3(x, y, z));
             (float uG, float vG, float wG) =
-                poly.GetBarycentricCoordsGlobal(new Vector3(x, y, z));
+                poly.GetBarycentricCoordsGlobal(u, v, w);
             if (uG is float.NaN) uG = 0;
             if (vG is float.NaN) vG = 0;
             if (wG is float.NaN) wG = 0;

@@ -16,46 +16,34 @@ namespace WypelnianieSiatkiTrojkatow.Utils
     {
         private static readonly Pen CONTROL_NET_PEN = new Pen(Brushes.DarkBlue, 2);
 
-        public static void FillMesh(Bitmap drawArea, List<Triangle> mesh,
-            float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor,
+        public static void FillMesh(
+            Bitmap drawArea,
+            Model model,
+            DrawingParams drawingParams,
             Func<int, int, (int, int)> CanvasTranslate,
-            bool isSolidColor, Color[,] textureArr, int textureWidth, int textureHeight,
-            bool modifyNormal, Color[,] normalMap,
             Func<bool> isCancelled)
         {
             using (var fastBitmap = drawArea.FastLock())
             {
-                Triangle[] cp = new Triangle[mesh.Count];
-                mesh.CopyTo(cp);
+                Triangle[] cp = new Triangle[model.Mesh.Count];
+                model.Mesh.CopyTo(cp);
                 Parallel.ForEach(cp, (triangle) =>
                 {
                     if (isCancelled()) return;
-                    FillPolygon(fastBitmap, triangle, kd, ks, m,
-                        objectColor, light, lightColor, CanvasTranslate,
-                        isSolidColor, textureArr, textureWidth, textureHeight,
-                        modifyNormal, normalMap,
-                        isCancelled);
+                    FillPolygon(fastBitmap,
+                        triangle, model,drawingParams,
+                        CanvasTranslate, isCancelled);
                     if (isCancelled()) return;
                 });
-                //for (int i = 0; i < mesh.Count; i++)  // todo parallel
-                //{
-                //    if (isCancelled()) break;
-                //    FillPolygon(fastBitmap, mesh[i], kd, ks, m,
-                //        light, lightColor,
-                //        ObjectColor, CanvasTranslate,
-                //        isCancelled);
-                //    if (isCancelled()) break;
-                //}
             }
         }
 
-        public static void FillPolygon(FastBitmap fastBitmap,
-            IFillablePolygon poly, float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor,
+        public static void FillPolygon(
+            FastBitmap fastBitmap,
+            IFillablePolygon poly,
+            Model model,
+            DrawingParams drawingParams,
             Func<int, int, (int, int)> CanvasTranslate,
-            bool isSolidColor, Color[,] textureArr, int textureWidth, int textureHeight,
-            bool modifyNormal, Color[,] normalMap,
             Func<bool> isCancelled)
         {
             EdgesBucketSorted ET = poly.GetET();
@@ -77,10 +65,8 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 {
                     for (int x = (int)e.x; x <= (int)e.next.x; x++)
                     {
-                        Color c = (Color)GetIFillColor((Triangle)poly, x, y,
-                            kd, ks, m, objectColor, light, lightColor,
-                            isSolidColor, textureArr, textureWidth, textureHeight,
-                            modifyNormal, normalMap)!;
+                        Color c = (Color)GetIFillColor((Triangle)poly,
+                            x, y, model, drawingParams)!;
                         (int xT, int yT) = CanvasTranslate(x, y);
                         if (xT >= 0 && xT < fastBitmap.Width &&
                             yT >= 0 && yT < fastBitmap.Height)
@@ -106,11 +92,12 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
         }
 
-        public static Color? GetIFillColor(IFillablePolygon poly,
-            int x, int y, float kd, float ks, int m,
-            Vector3 objectColor, Vector3 light, Vector3 lightColor,
-            bool isSolidColor, Color[,] textureArr, int textureWidth, int textureHeight,
-            bool modifyNormal, Color[,] NormalMap)
+        public static Color? GetIFillColor(
+            IFillablePolygon poly,
+            int x, 
+            int y,
+            Model model,
+            DrawingParams drawingParams)
         {
             float z = poly.CalculateZ(x, y);
             (float u, float v, float w) =
@@ -122,19 +109,23 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             if (wG is float.NaN) wG = 0;
 
             Vector3 IO;
-            if (isSolidColor)
+            if (drawingParams.isSolidColor)
             {
-                IO = objectColor;
+                IO = drawingParams.objectColor;
             }
             else
             {
-                Color c = textureArr[
+
+                int width = drawingParams.textureArr.GetLength(0);
+                int height = drawingParams.textureArr.GetLength(1);
+
+                Color c = drawingParams.textureArr[
                     uG < 0 || uG is float.NaN ? 0 :
-                    uG >= 1 ? textureWidth - 1 :
-                        (int)(uG * textureWidth),
+                    uG >= 1 ? width - 1 :
+                        (int)(uG * width),
                     vG < 0 || vG is float.NaN ? 0 :
-                    vG >= 1 ? textureHeight - 1 :
-                        (int)(vG * textureHeight)
+                    vG >= 1 ? height - 1 :
+                        (int)(vG * height)
                     ];
                 IO = new Vector3(
                     c.R / 255F,
@@ -142,16 +133,16 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     c.B / 255F);
             }
 
-            Vector3 IL = lightColor;
+            Vector3 IL = drawingParams.lightColor;
             Vector3 V = new Vector3(0F, 0F, 1F);
             Vector3 N = Vector3.Normalize(poly.GetNVector(u, v, w));
-            if (modifyNormal)
+            if (drawingParams.isModifyNormalVec)
             {
 
-                int width = NormalMap.GetLength(0);
-                int height = NormalMap.GetLength(1);
+                int width = drawingParams.normalMapArr.GetLength(0);
+                int height = drawingParams.normalMapArr.GetLength(1);
 
-                Color c = NormalMap[
+                Color c = drawingParams.normalMapArr[
                     uG <= 0 ? 0 : uG >= 1 ? width - 1 :
                         (int)(uG * width),
                     vG <= 0 ? 0 : vG >= 1 ? height - 1 :
@@ -172,13 +163,13 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     );
             }
 
-            Vector3 L = Vector3.Normalize(light - new Vector3(x, y, z));
+            Vector3 L = Vector3.Normalize(model.lightPos - new Vector3(x, y, z));
             Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
 
             float cosNL = Vector3.Dot(N, L);
             float cosVR = Vector3.Dot(V, R);
-            Vector3 I = kd * IL * IO * (cosNL >= 0 ? cosNL : 0) +
-                ks * IL * IO * (cosVR >= 0 ? (float)Math.Pow(cosVR, m) : 0);
+            Vector3 I = drawingParams.kd * IL * IO * (cosNL >= 0 ? cosNL : 0) +
+                drawingParams.ks * IL * IO * (cosVR >= 0 ? (float)Math.Pow(cosVR, drawingParams.m) : 0);
 
             return Color.FromArgb(
                 I.X <= 1 ? (int)(I.X * 255) : 255,

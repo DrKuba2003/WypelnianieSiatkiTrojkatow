@@ -17,8 +17,7 @@ namespace WypelnianieSiatkiTrojkatow
         public List<Triangle> Mesh = new();
         public Vector3 lightPos;
 
-        public int alfa, beta, m;
-        public float kd, ks;
+        public int alfa, beta;
 
         private double radiuss;
         private double angles;
@@ -26,15 +25,11 @@ namespace WypelnianieSiatkiTrojkatow
         private BackgroundWorker animationBW;
 
 
-        public Model(string path, int netP, int alfa, int beta,
-            float kd, float ks, int m, int lightZ,
+        public Model(string path, int netP, int alfa, int beta, int lightZ,
             ProgressChangedEventHandler animationBw_ProgressChanged)
         {
             this.alfa = alfa;
             this.beta = beta;
-            this.kd = kd;
-            this.ks = ks;
-            this.m = m;
 
             CalculateModel(path, netP);
 
@@ -50,8 +45,8 @@ namespace WypelnianieSiatkiTrojkatow
         }
         private void animation_DoWork(Object sender, DoWorkEventArgs e)
         {
-            double angleSpeed = 2,
-                 rSpeed = 0.2;
+            double angleSpeed = 6,
+                 rSpeed = 0.1;
 
             while (!animationBW.CancellationPending && isAnimationRunnig)
             {
@@ -62,7 +57,7 @@ namespace WypelnianieSiatkiTrojkatow
                 lightPos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(angles)));
 
                 animationBW.ReportProgress(0);
-                Thread.Sleep(200);
+                Thread.Sleep(300);
             }
         }
 
@@ -178,9 +173,9 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void ResetLightPos()
         {
-            lightPos.X = 50;
+            lightPos.X = 100;
             lightPos.Y = 0;
-            radiuss = 50;
+            radiuss = lightPos.X;
             angles = 0;
         }
 

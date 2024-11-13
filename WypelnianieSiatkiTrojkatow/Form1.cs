@@ -26,20 +26,8 @@ namespace WypelnianieSiatkiTrojkatow
         private BufferedGraphicsContext bufferGContext;
         private BufferedGraphics bufferG;
 
-        private Vector3 objectColor, lightColor;
-
         private Model model;
-        private Color[,] textureArr;
-        private int textureWidth, textureHeight;
-
-        private Color[,] normalMapArr;
-
-        private bool isDrawFilling,
-            isSolidColor,
-            isModifyNormalVec,
-            isDrawMesh,
-            isDrawControlPts,
-            isDrawLightPos;
+        private DrawingParams drawingParams;
 
         // todo add show drawing in progrss and drawing restart btn
         // todo add drawing z filtering?
@@ -54,9 +42,6 @@ namespace WypelnianieSiatkiTrojkatow
 
             width = panel1.Width;
             height = panel1.Height;
-            objectColor = ColorToVector3(objectColorPanel.BackColor);
-            lightColor = ColorToVector3(lightColorPanel.BackColor);
-            InitBools();
 
             bufferGContext = BufferedGraphicsManager.Current;
             bufferGContext.MaximumBuffer = new Size(width + 1, height + 1);
@@ -69,8 +54,18 @@ namespace WypelnianieSiatkiTrojkatow
 
             model = new Model(DEFAULT_PTS, netPrecisionTrack.Value,
                 alfaAngleTrack.Value, betaAngleTrack.Value,
-                ReadKd(), ReadKs(), mTrack.Value,
                 zTrack.Value, animationBw_ProgressChanged);
+
+            drawingParams = new DrawingParams(ReadKd(), ReadKs(),
+                mTrack.Value,
+                ColorToVector3(objectColorPanel.BackColor),
+                ColorToVector3(lightColorPanel.BackColor),
+                drawFillingCheck.Checked,
+                solidColorRBtn.Checked,
+                modifyNormalVecCheck.Checked,
+                drawTriangleNetCheck.Checked,
+                drawControlPtsCheck.Checked,
+                drawLightPosCheck.Checked);
 
             LoadTexture(DEFAULT_TEXTURE);
             LoadNormalVectors(DEFAULT_NORMAL_VEC);
@@ -98,16 +93,6 @@ namespace WypelnianieSiatkiTrojkatow
             PauseResumeBtn.Text = "Resume";
         }
 
-        private void InitBools()
-        {
-            isDrawFilling = drawFillingCheck.Checked;
-            isSolidColor = solidColorRBtn.Checked;
-            isModifyNormalVec = modifyNormalVecCheck.Checked;
-            isDrawMesh = drawTriangleNetCheck.Checked;
-            isDrawControlPts = drawControlPtsCheck.Checked;
-            isDrawLightPos = drawLightPosCheck.Checked;
-        }
-
         #region Drawing
 
         public void DrawToBuffer(Graphics g, Func<bool> isCancelled)
@@ -115,32 +100,27 @@ namespace WypelnianieSiatkiTrojkatow
             if (isCancelled()) return;
             g.Clear(Color.WhiteSmoke);
 
-            if (isDrawFilling)
+            if (drawingParams.isDrawFilling)
             {
                 if (isCancelled()) return;
 
                 Bitmap bmp = new Bitmap(width, height);
                 if (isCancelled()) return;
 
-                DrawingUtil.FillMesh(bmp, model.Mesh, 
-                    model.kd, model.ks, model.m,
-                    objectColor, model.lightPos, lightColor,
-                    TranslatePtsToBitmap,
-                    isSolidColor, textureArr, textureWidth, textureHeight,
-                    isModifyNormalVec, normalMapArr,
-                    isCancelled);
+                DrawingUtil.FillMesh(bmp, model, drawingParams,
+                    TranslatePtsToBitmap, isCancelled);
                 if (isCancelled()) return;
 
                 g.DrawImage(bmp, -width / 2, -height / 2);
             }
 
-            if (isDrawMesh)
+            if (drawingParams.isDrawMesh)
                 DrawingUtil.DrawTriangles(g, model.Mesh, isCancelled);
 
-            if (isDrawControlPts)
+            if (drawingParams.isDrawControlPts)
                 DrawingUtil.DrawControlPts(g, model.ControlVertexes, isCancelled);
 
-            if (isDrawLightPos)
+            if (drawingParams.isDrawLightPos)
                 g.FillEllipse(Brushes.Gold, new Rectangle((int)model.lightPos.X - 5,
                     (int)model.lightPos.Y - 5, 10, 10));
         }
@@ -201,14 +181,14 @@ namespace WypelnianieSiatkiTrojkatow
                 Image image = Image.FromStream(bmpStream);
 
                 Bitmap texture = new Bitmap(image);
-                textureWidth = texture.Width;
-                textureHeight = texture.Height;
-                textureArr = new Color[textureWidth, textureHeight];
-                for (int y = 0; y < textureHeight; y++)
+                int width = texture.Width;
+                int height = texture.Height;
+                drawingParams.textureArr = new Color[width, height];
+                for (int y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < textureWidth; x++)
+                    for (int x = 0; x < width; x++)
                     {
-                        textureArr[x, y] = texture.GetPixel(x, y);
+                        drawingParams.textureArr[x, y] = texture.GetPixel(x, y);
                     }
                 }
             }
@@ -221,14 +201,14 @@ namespace WypelnianieSiatkiTrojkatow
                 Image image = Image.FromStream(bmpStream);
 
                 Bitmap normalMap = new Bitmap(image);
-                int normalMapWidth = normalMap.Width;
-                int normalMapHeight = normalMap.Height;
-                normalMapArr = new Color[normalMapWidth, normalMapHeight];
-                for (int y = 0; y < normalMapHeight; y++)
+                int width = normalMap.Width;
+                int height = normalMap.Height;
+                drawingParams.normalMapArr = new Color[width, height];
+                for (int y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < normalMapWidth; x++)
+                    for (int x = 0; x < width; x++)
                     {
-                        normalMapArr[x, y] = normalMap.GetPixel(x, y);
+                        drawingParams.normalMapArr[x, y] = normalMap.GetPixel(x, y);
                     }
                 }
             }
@@ -240,37 +220,37 @@ namespace WypelnianieSiatkiTrojkatow
 
         private void drawControlPtsCheck_CheckedChanged(object sender, EventArgs e)
         {
-            isDrawControlPts = drawControlPtsCheck.Checked;
+            drawingParams.isDrawControlPts = drawControlPtsCheck.Checked;
             Draw();
         }
         private void drawTriangleNetCheck_CheckedChanged(object sender, EventArgs e)
         {
-            isDrawMesh = drawTriangleNetCheck.Checked;
+            drawingParams.isDrawMesh = drawTriangleNetCheck.Checked;
             Draw();
         }
         private void drawFillingCheck_CheckedChanged(object sender, EventArgs e)
         {
-            isDrawFilling = drawFillingCheck.Checked;
+            drawingParams.isDrawFilling = drawFillingCheck.Checked;
             Draw();
         }
         private void modifyNormalVecCheck_CheckedChanged(object sender, EventArgs e)
         {
-            isModifyNormalVec = modifyNormalVecCheck.Checked;
+            drawingParams.isModifyNormalVec = modifyNormalVecCheck.Checked;
             Draw();
         }
         private void solidColorRBtn_CheckedChanged(object sender, EventArgs e)
         {
-            isSolidColor = solidColorRBtn.Checked;
+            drawingParams.isSolidColor = solidColorRBtn.Checked;
             Draw();
         }
         private void textureRBtn_CheckedChanged(object sender, EventArgs e)
         {
-            isSolidColor = solidColorRBtn.Checked;
+            drawingParams.isSolidColor = solidColorRBtn.Checked;
             Draw();
         }
         private void drawLightPosCheck_CheckedChanged(object sender, EventArgs e)
         {
-            isDrawLightPos = drawLightPosCheck.Checked;
+            drawingParams.isDrawLightPos = drawLightPosCheck.Checked;
             Draw();
         }
 
@@ -303,21 +283,21 @@ namespace WypelnianieSiatkiTrojkatow
         private void kdTrack_Scroll(object sender, EventArgs e)
         {
             kdValue.Text = $"{kdTrack.Value}%";
-            model.kd = kdTrack.Value / 100F;
+            drawingParams.kd = kdTrack.Value / 100F;
             Draw();
         }
 
         private void ksTrack_Scroll(object sender, EventArgs e)
         {
             ksValue.Text = $"{ksTrack.Value}%";
-            model.ks = ksTrack.Value / 100F;
+            drawingParams.ks = ksTrack.Value / 100F;
             Draw();
         }
 
         private void mTrack_Scroll(object sender, EventArgs e)
         {
             mValue.Text = mTrack.Value.ToString();
-            model.m = mTrack.Value;
+            drawingParams.m = mTrack.Value;
             Draw();
         }
 
@@ -345,7 +325,7 @@ namespace WypelnianieSiatkiTrojkatow
                 if (MyDialog.ShowDialog() == DialogResult.OK)
                 {
                     lightColorPanel.BackColor = MyDialog.Color;
-                    lightColor = ColorToVector3(MyDialog.Color);
+                    drawingParams.lightColor = ColorToVector3(MyDialog.Color);
                     Draw();
                 }
             }
@@ -362,7 +342,7 @@ namespace WypelnianieSiatkiTrojkatow
                 if (MyDialog.ShowDialog() == DialogResult.OK)
                 {
                     objectColorPanel.BackColor = MyDialog.Color;
-                    objectColor = ColorToVector3(MyDialog.Color);
+                    drawingParams.objectColor = ColorToVector3(MyDialog.Color);
                     Draw();
                 }
             }

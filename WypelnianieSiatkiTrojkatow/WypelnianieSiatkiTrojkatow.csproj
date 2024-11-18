@@ -49,10 +49,10 @@
     <None Update="Resources\NormalVectors\normal_map.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Points\BezierSurface.txt">
+    <None Update="Resources\Points\punkty5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Points\punkty4.txt">
+    <None Update="Resources\Points\punkty3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Points\punkty2.txt">
@@ -61,7 +61,7 @@
     <None Update="Resources\Points\punkty1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Points\punkty.txt">
+    <None Update="Resources\Points\punkty4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Textures\154.jpg">

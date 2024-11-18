@@ -48,8 +48,7 @@ namespace WypelnianieSiatkiTrojkatow
 
             model = new Model(DEFAULT_PTS, netPrecisionTrack.Value,
                 alfaAngleTrack.Value, betaAngleTrack.Value,
-                zTrack.Value, animationBw_ProgressChanged,
-                noLightSourcesTrack.Value);
+                zTrack.Value, animationBw_ProgressChanged);
 
             drawingParams = new DrawingParams(ReadKd(), ReadKs(),
                 mTrack.Value,
@@ -316,14 +315,6 @@ namespace WypelnianieSiatkiTrojkatow
             model.SetLightZ(zTrack.Value);
             Draw();
         }
-        private void noLightSourcesTrack_Scroll(object sender, EventArgs e)
-        {
-            model.SetNoLightSources(noLightSourcesTrack.Value);
-            model.ResetLightPos();
-            model.SetLightZ(zTrack.Value);
-
-            Draw();
-        }
 
         private void PauseResumeBtn_Click(object sender, EventArgs e)
         {
@@ -497,6 +488,5 @@ namespace WypelnianieSiatkiTrojkatow
 
         #endregion
 
-        
     }
 }

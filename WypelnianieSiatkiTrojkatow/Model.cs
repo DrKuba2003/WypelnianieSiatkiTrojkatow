@@ -35,7 +35,7 @@ namespace WypelnianieSiatkiTrojkatow
 
             lightPos = new List<Vector3>();
             // add multiple light sources
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
                 lightPos.Add(new(0, 0, 0));
             ResetLightPos();
             SetLightZ(lightZ);

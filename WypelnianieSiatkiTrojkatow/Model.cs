@@ -26,7 +26,8 @@ namespace WypelnianieSiatkiTrojkatow
 
 
         public Model(string path, int netP, int alfa, int beta, int lightZ,
-            ProgressChangedEventHandler animationBw_ProgressChanged)
+            ProgressChangedEventHandler animationBw_ProgressChanged,
+            int noLightSources)
         {
             this.alfa = alfa;
             this.beta = beta;
@@ -34,11 +35,10 @@ namespace WypelnianieSiatkiTrojkatow
             CalculateModel(path, netP);
 
             lightPos = new List<Vector3>();
-            // add multiple light sources
-            for (int i = 0; i < 3; i++)
-                lightPos.Add(new(0, 0, 0));
+            SetNoLightSources(noLightSources);
             ResetLightPos();
             SetLightZ(lightZ);
+
             animationBW = new BackgroundWorker();
             animationBW.DoWork += animation_DoWork;
             animationBW.ProgressChanged += animationBw_ProgressChanged;
@@ -203,6 +203,14 @@ namespace WypelnianieSiatkiTrojkatow
                 pos.Z = z;
                 lightPos[i] = pos;
             }
+        }
+
+        public void SetNoLightSources(int n)
+        {
+            lightPos.Clear();
+            // add multiple light sources
+            for (int i = 0; i < n; i++)
+                lightPos.Add(new(0, 0, 0));
         }
 
     }

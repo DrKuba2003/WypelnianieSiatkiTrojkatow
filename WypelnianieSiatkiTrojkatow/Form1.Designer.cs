@@ -77,6 +77,9 @@
             panel1 = new DoubleBufferedPanel();
             isDrawing = new Label();
             drawLightPosCheck = new CheckBox();
+            groupBox1 = new GroupBox();
+            noLightSourcesTrack = new TrackBar();
+            label12 = new Label();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).BeginInit();
@@ -85,6 +88,8 @@
             ((System.ComponentModel.ISupportInitialize)mTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)zTrack).BeginInit();
             panel1.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)noLightSourcesTrack).BeginInit();
             SuspendLayout();
             // 
             // drawControlPtsCheck
@@ -618,11 +623,43 @@
             drawLightPosCheck.UseVisualStyleBackColor = true;
             drawLightPosCheck.CheckedChanged += drawLightPosCheck_CheckedChanged;
             // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(label12);
+            groupBox1.Controls.Add(noLightSourcesTrack);
+            groupBox1.Location = new Point(11, 326);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(181, 112);
+            groupBox1.TabIndex = 49;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Dodatkowe";
+            // 
+            // noLightSourcesTrack
+            // 
+            noLightSourcesTrack.Location = new Point(6, 50);
+            noLightSourcesTrack.Maximum = 5;
+            noLightSourcesTrack.Minimum = 1;
+            noLightSourcesTrack.Name = "noLightSourcesTrack";
+            noLightSourcesTrack.Size = new Size(169, 56);
+            noLightSourcesTrack.TabIndex = 0;
+            noLightSourcesTrack.Value = 1;
+            noLightSourcesTrack.Scroll += noLightSourcesTrack_Scroll;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(9, 27);
+            label12.Name = "label12";
+            label12.Size = new Size(101, 20);
+            label12.TabIndex = 50;
+            label12.Text = "Liczba swiatel";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(groupBox1);
             Controls.Add(drawLightPosCheck);
             Controls.Add(resetLightXYBtn);
             Controls.Add(label15);
@@ -686,6 +723,9 @@
             ((System.ComponentModel.ISupportInitialize)zTrack).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)noLightSourcesTrack).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -740,5 +780,8 @@
         private DoubleBufferedPanel panel1;
         private CheckBox drawLightPosCheck;
         private Label isDrawing;
+        private GroupBox groupBox1;
+        private Label label12;
+        private TrackBar noLightSourcesTrack;
     }
 }

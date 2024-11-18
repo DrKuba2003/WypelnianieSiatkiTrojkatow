@@ -15,7 +15,7 @@ namespace WypelnianieSiatkiTrojkatow
         public Vertex[,] ControlVertexes = new Vertex[4, 4];
         public Vertex[,]? PrecisionVertexes;
         public List<Triangle> Mesh = new();
-        public Vector3 lightPos;
+        public List<Vector3> lightPos;
 
         public int alfa, beta;
 
@@ -33,7 +33,10 @@ namespace WypelnianieSiatkiTrojkatow
 
             CalculateModel(path, netP);
 
-            lightPos = new Vector3();
+            lightPos = new List<Vector3>();
+            // add multiple light sources
+            for (int i = 0; i < 3; i++)
+                lightPos.Add(new(0, 0, 0));
             ResetLightPos();
             SetLightZ(lightZ);
             animationBW = new BackgroundWorker();
@@ -53,11 +56,17 @@ namespace WypelnianieSiatkiTrojkatow
                 angles = (angles + angleSpeed) % 360;
                 radiuss += rSpeed;
 
-                lightPos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(angles)));
-                lightPos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(angles)));
+                for (int i = 0; i < lightPos.Count; i++) 
+                {
+                    Vector3 pos = lightPos[i];
+                    double a = angles + (i / (float)lightPos.Count) * 360;
+                    pos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(a)));
+                    pos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(a)));
+                    lightPos[i] = pos;
+                }
 
                 animationBW.ReportProgress(0);
-                Thread.Sleep(300);
+                Thread.Sleep(200);
             }
         }
 
@@ -173,13 +182,28 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void ResetLightPos()
         {
-            lightPos.X = 100;
-            lightPos.Y = 0;
-            radiuss = lightPos.X;
+            radiuss = 200;
             angles = 0;
+            for (int i = 0; i < lightPos.Count; i++)
+            {
+                Vector3 pos = lightPos[i];
+                double a = angles + (i / (float)lightPos.Count) * 360;
+                pos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(a)));
+                pos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(a)));
+                lightPos[i] = pos;
+            }
+
         }
 
-        public void SetLightZ(int z) => lightPos.Z = z;
+        public void SetLightZ(int z)
+        {
+            for (int i = 0; i < lightPos.Count; i++)
+            {
+                Vector3 pos = lightPos[i];
+                pos.Z = z;
+                lightPos[i] = pos;
+            }
+        }
 
     }
 }

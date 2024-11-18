@@ -75,6 +75,7 @@
             label15 = new Label();
             resetLightXYBtn = new Button();
             panel1 = new DoubleBufferedPanel();
+            isDrawing = new Label();
             drawLightPosCheck = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
@@ -83,6 +84,7 @@
             ((System.ComponentModel.ISupportInitialize)ksTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)mTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)zTrack).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // drawControlPtsCheck
@@ -289,7 +291,6 @@
             ksTrack.Size = new Size(207, 56);
             ksTrack.TabIndex = 20;
             ksTrack.TickStyle = TickStyle.None;
-            ksTrack.Value = 100;
             ksTrack.Scroll += ksTrack_Scroll;
             // 
             // ksValue
@@ -365,7 +366,7 @@
             zTrack.Size = new Size(198, 56);
             zTrack.TabIndex = 27;
             zTrack.TickStyle = TickStyle.None;
-            zTrack.Value = 500;
+            zTrack.Value = 125;
             zTrack.Scroll += zTrack_Scroll;
             // 
             // zValue
@@ -436,12 +437,10 @@
             // 
             solidColorRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             solidColorRBtn.AutoSize = true;
-            solidColorRBtn.Checked = true;
             solidColorRBtn.Location = new Point(1097, 451);
             solidColorRBtn.Name = "solidColorRBtn";
             solidColorRBtn.Size = new Size(100, 24);
             solidColorRBtn.TabIndex = 34;
-            solidColorRBtn.TabStop = true;
             solidColorRBtn.Text = "Kolor stały";
             solidColorRBtn.UseVisualStyleBackColor = true;
             solidColorRBtn.CheckedChanged += solidColorRBtn_CheckedChanged;
@@ -450,10 +449,12 @@
             // 
             textureRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textureRBtn.AutoSize = true;
+            textureRBtn.Checked = true;
             textureRBtn.Location = new Point(1097, 523);
             textureRBtn.Name = "textureRBtn";
             textureRBtn.Size = new Size(84, 24);
             textureRBtn.TabIndex = 35;
+            textureRBtn.TabStop = true;
             textureRBtn.Text = "Tekstura";
             textureRBtn.UseVisualStyleBackColor = true;
             textureRBtn.CheckedChanged += textureRBtn_CheckedChanged;
@@ -517,6 +518,8 @@
             // 
             modifyNormalVecCheck.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             modifyNormalVecCheck.AutoSize = true;
+            modifyNormalVecCheck.Checked = true;
+            modifyNormalVecCheck.CheckState = CheckState.Checked;
             modifyNormalVecCheck.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
             modifyNormalVecCheck.Location = new Point(1085, 640);
             modifyNormalVecCheck.Name = "modifyNormalVecCheck";
@@ -584,11 +587,25 @@
             // panel1
             // 
             panel1.BackColor = Color.White;
+            panel1.Controls.Add(isDrawing);
             panel1.Location = new Point(207, 1);
             panel1.Name = "panel1";
             panel1.Size = new Size(875, 754);
             panel1.TabIndex = 47;
             panel1.Paint += panel1_Paint;
+            // 
+            // isDrawing
+            // 
+            isDrawing.AutoSize = true;
+            isDrawing.BackColor = Color.Transparent;
+            isDrawing.Font = new Font("Segoe UI", 7.8F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 238);
+            isDrawing.ForeColor = Color.Black;
+            isDrawing.Location = new Point(3, 726);
+            isDrawing.Name = "isDrawing";
+            isDrawing.Size = new Size(73, 17);
+            isDrawing.TabIndex = 0;
+            isDrawing.Text = "Drawing...";
+            isDrawing.Visible = false;
             // 
             // drawLightPosCheck
             // 
@@ -667,6 +684,8 @@
             ((System.ComponentModel.ISupportInitialize)ksTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)mTrack).EndInit();
             ((System.ComponentModel.ISupportInitialize)zTrack).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -720,5 +739,6 @@
         private Button resetLightXYBtn;
         private DoubleBufferedPanel panel1;
         private CheckBox drawLightPosCheck;
+        private Label isDrawing;
     }
 }

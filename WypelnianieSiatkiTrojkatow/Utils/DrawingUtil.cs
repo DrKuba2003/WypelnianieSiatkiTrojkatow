@@ -1,6 +1,7 @@
 ﻿using FastBitmapLib;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -21,7 +22,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Model model,
             DrawingParams drawingParams,
             Func<int, int, (int, int)> CanvasTranslate,
-            Func<bool> isCancelled)
+            BackgroundWorker bw)
         {
             using (var fastBitmap = drawArea.FastLock())
             {
@@ -29,11 +30,11 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 model.Mesh.CopyTo(cp);
                 Parallel.ForEach(cp, (triangle) =>
                 {
-                    if (isCancelled()) return;
+                    if (bw.CancellationPending) return;
                     FillPolygon(fastBitmap,
                         triangle, model,drawingParams,
-                        CanvasTranslate, isCancelled);
-                    if (isCancelled()) return;
+                        CanvasTranslate, bw);
+                    if (bw.CancellationPending) return;
                 });
             }
         }
@@ -44,7 +45,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             Model model,
             DrawingParams drawingParams,
             Func<int, int, (int, int)> CanvasTranslate,
-            Func<bool> isCancelled)
+            BackgroundWorker bw)
         {
             EdgesBucketSorted ET = poly.GetET();
             if (ET.IsEmpty()) return;
@@ -59,18 +60,21 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     ET[y].Clear();
                 }
                 AET.QSort();
+                if (bw.CancellationPending) break;
 
                 Edge? e = AET.head;
                 while (e is not null && e.next is not null)
                 {
                     for (int x = (int)e.x; x <= (int)e.next.x; x++)
                     {
-                        Color c = (Color)GetIFillColor((Triangle)poly,
-                            x, y, model, drawingParams)!;
+                        Color? c = GetIFillColor((Triangle)poly,
+                            x, y, model, drawingParams);
+                        if (c is null) continue;
+
                         (int xT, int yT) = CanvasTranslate(x, y);
                         if (xT >= 0 && xT < fastBitmap.Width &&
                             yT >= 0 && yT < fastBitmap.Height)
-                            fastBitmap.SetPixel(xT, yT, c);
+                            fastBitmap.SetPixel(xT, yT, (Color)c);
                     }
 
                     e = e.next.next;
@@ -89,7 +93,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 }
 
                 y++;
-            } while (!AET.IsEmpty() || !ET[ET.maxY].IsEmpty());
+            } while ((!AET.IsEmpty() || !ET[ET.maxY].IsEmpty()) && !bw.CancellationPending);
         }
 
         public static Color? GetIFillColor(
@@ -102,6 +106,10 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             float z = poly.CalculateZ(x, y);
             (float u, float v, float w) =
                 poly.GetBarycentricCoords(new Vector3(x, y, z));
+            //if (u < 0 || u > 1 ||
+            //    v < 0 || v > 1 ||
+            //    w < 0 || w > 1) return null; // pt outside triangle
+
             (float uG, float vG, float wG) =
                 poly.GetBarycentricCoordsGlobal(u, v, w);
             if (uG is float.NaN) uG = 0;
@@ -115,7 +123,6 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             }
             else
             {
-
                 int width = drawingParams.textureArr.GetLength(0);
                 int height = drawingParams.textureArr.GetLength(1);
 
@@ -127,10 +134,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     vG >= 1 ? height - 1 :
                         (int)(vG * height)
                     ];
-                IO = new Vector3(
-                    c.R / 255F,
-                    c.G / 255F,
-                    c.B / 255F);
+                IO = new Vector3(c.R, c.G, c.B) / 255F;
             }
 
             Vector3 IL = drawingParams.lightColor;
@@ -153,6 +157,7 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     c.G / 127.5F - 1,
                     c.B / 127.5F - 1
                     );
+
                 Vector3 Pu = Vector3.Normalize(poly.GetPuVector(u, v, w));
                 Vector3 Pv = Vector3.Normalize(poly.GetPvVector(u, v, w));
                 N = new Vector3(
@@ -162,14 +167,20 @@ namespace WypelnianieSiatkiTrojkatow.Utils
 
                     );
             }
+            Vector3 I = new Vector3(0, 0, 0);
 
-            Vector3 L = Vector3.Normalize(model.lightPos - new Vector3(x, y, z));
-            Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
+            for (int i = 0; i < model.lightPos.Count; i++)
+            {
+                Vector3 pos = model.lightPos[i];
+                Vector3 L = Vector3.Normalize(pos - new Vector3(x, y, z));
+                Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
 
-            float cosNL = Vector3.Dot(N, L);
-            float cosVR = Vector3.Dot(V, R);
-            Vector3 I = drawingParams.kd * IL * IO * (cosNL >= 0 ? cosNL : 0) +
-                drawingParams.ks * IL * IO * (cosVR >= 0 ? (float)Math.Pow(cosVR, drawingParams.m) : 0);
+                float cosNL = Vector3.Dot(N, L);
+                float cosVR = Vector3.Dot(V, R);
+                Vector3 ILXIO = IL * IO;
+                I += drawingParams.kd * ILXIO * (cosNL >= 0 ? cosNL : 0) +
+                    drawingParams.ks * ILXIO * (cosVR >= 0 ? (float)Math.Pow(cosVR, drawingParams.m) : 0);
+            }
 
             return Color.FromArgb(
                 I.X <= 1 ? (int)(I.X * 255) : 255,
@@ -178,11 +189,11 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 );
         }
 
-        public static void DrawTriangles(Graphics g, List<Triangle> mesh, Func<bool> isCancelled)
+        public static void DrawTriangles(Graphics g, List<Triangle> mesh, BackgroundWorker bw)
         {
             for (int i = 0; i < mesh.Count; i++)
             {
-                if (isCancelled()) break;
+                if (bw.CancellationPending) break;
                 DrawTriangle(g, mesh[i], Pens.Magenta);
             }
         }
@@ -202,13 +213,13 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 new Point((int)t.V2.X, (int)t.V2.Y));
         }
 
-        public static void DrawControlPts(Graphics g, Vertex[,] ControlVertexes, Func<bool> isCancelled)
+        public static void DrawControlPts(Graphics g, Vertex[,] ControlVertexes, BackgroundWorker bw)
         {
             for (int j = 0; j < 4; j++)
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    if (isCancelled()) break;
+                    if (bw.CancellationPending) break;
                     Vertex v = ControlVertexes[j, i];
                     if (j < 3)
                         g.DrawLine(CONTROL_NET_PEN,
@@ -224,14 +235,14 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             }
         }
 
-        public static void DrawPrecisionPts(Graphics g, Vertex[,]? PrecisionVertexes, Func<bool> isCancelled)
+        public static void DrawPrecisionPts(Graphics g, Vertex[,]? PrecisionVertexes, BackgroundWorker bw)
         {
             if (PrecisionVertexes == null) return;
 
             for (int j = 0; j < PrecisionVertexes.GetLength(0); j++)
                 for (int i = 0; i < PrecisionVertexes.GetLength(1); i++)
                 {
-                    if (isCancelled()) break;
+                    if (bw.CancellationPending) break;
                     var v = PrecisionVertexes[j, i];
                     g.FillEllipse(Brushes.Blue, v.X - 5, v.Y - 5, 10, 10);
                 }

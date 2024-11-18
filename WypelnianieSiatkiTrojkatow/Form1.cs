@@ -22,17 +22,11 @@ namespace WypelnianieSiatkiTrojkatow
 
         private int width, height;
         private BackgroundWorker drawBW;
-        private bool restartDrawing = false;
         private BufferedGraphicsContext bufferGContext;
         private BufferedGraphics bufferG;
 
         private Model model;
         private DrawingParams drawingParams;
-
-        // todo add show drawing in progrss and drawing restart btn
-        // todo add drawing z filtering?
-        // todo skalowanie punktow kontrolnych
-        // todo parametry animacji
 
         public Form1()
         {
@@ -95,63 +89,77 @@ namespace WypelnianieSiatkiTrojkatow
 
         #region Drawing
 
-        public void DrawToBuffer(Graphics g, Func<bool> isCancelled)
+        public void DrawToBuffer(Graphics g, BackgroundWorker bw)
         {
-            if (isCancelled()) return;
+            if (bw.CancellationPending) return;
             g.Clear(Color.WhiteSmoke);
 
             if (drawingParams.isDrawFilling)
             {
-                if (isCancelled()) return;
+                if (bw.CancellationPending) return;
 
                 Bitmap bmp = new Bitmap(width, height);
-                if (isCancelled()) return;
+                if (bw.CancellationPending) return;
 
                 DrawingUtil.FillMesh(bmp, model, drawingParams,
-                    TranslatePtsToBitmap, isCancelled);
-                if (isCancelled()) return;
+                    TranslatePtsToBitmap, bw);
+                if (bw.CancellationPending) return;
 
                 g.DrawImage(bmp, -width / 2, -height / 2);
             }
 
             if (drawingParams.isDrawMesh)
-                DrawingUtil.DrawTriangles(g, model.Mesh, isCancelled);
+                DrawingUtil.DrawTriangles(g, model.Mesh, bw);
 
             if (drawingParams.isDrawControlPts)
-                DrawingUtil.DrawControlPts(g, model.ControlVertexes, isCancelled);
+                DrawingUtil.DrawControlPts(g, model.ControlVertexes, bw);
 
             if (drawingParams.isDrawLightPos)
-                g.FillEllipse(Brushes.Gold, new Rectangle((int)model.lightPos.X - 5,
-                    (int)model.lightPos.Y - 5, 10, 10));
+                for (int i = 0; i < model.lightPos.Count; i++)
+                {
+                    Vector3 pos = model.lightPos[i];
+                    g.FillEllipse(Brushes.Gold, new Rectangle(
+                        (int)pos.X - 5, (int)pos.Y - 5, 10, 10));
+                }
         }
 
         public void Draw()
         {
-            if (restartDrawing) return;
+            if (drawBW.CancellationPending) return;
 
             if (drawBW.IsBusy)
             {
+                // cancel current drawing 
                 drawBW.CancelAsync();
-                restartDrawing = true;
             }
             else
+            {
+                isDrawing.Visible = true;
                 drawBW.RunWorkerAsync();
+            }
         }
 
         private void draw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            DrawToBuffer(bufferG.Graphics, () => drawBW.CancellationPending);
+            BackgroundWorker bw = sender as BackgroundWorker;
+            DrawToBuffer(bufferG.Graphics, bw);
+
+            if (drawBW.CancellationPending)
+                e.Cancel = true;
         }
 
         private void drawBw_Completed(Object sender, RunWorkerCompletedEventArgs e)
         {
-            if (restartDrawing)
+            if (e.Cancelled || e.Error != null)
             {
+                // restart drawing
                 drawBW.RunWorkerAsync();
-                restartDrawing = false;
             }
             else
+            {
                 panel1.Refresh();
+                isDrawing.Visible = false;
+            }
         }
 
         private (int, int) TranslatePtsToBitmap(int x, int y)
@@ -430,14 +438,14 @@ namespace WypelnianieSiatkiTrojkatow
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             model.StopAnimation();
-            restartDrawing = false;
             drawBW.CancelAsync();
             Thread.Sleep(100);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            bufferG.Render(e.Graphics);
+            if (!drawBW.IsBusy)
+                bufferG.Render(e.Graphics);
         }
 
         #endregion

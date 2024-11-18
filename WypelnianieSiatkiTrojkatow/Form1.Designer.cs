@@ -77,6 +77,13 @@
             panel1 = new DoubleBufferedPanel();
             isDrawing = new Label();
             drawLightPosCheck = new CheckBox();
+            lightAnimationCheck = new CheckBox();
+            falowanieCheck = new CheckBox();
+            punktoweRadio = new RadioButton();
+            reflektorRadio = new RadioButton();
+            groupBox1 = new GroupBox();
+            reflektorLabel = new Label();
+            reflektorM = new TrackBar();
             ((System.ComponentModel.ISupportInitialize)netPrecisionTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)alfaAngleTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaAngleTrack).BeginInit();
@@ -85,6 +92,8 @@
             ((System.ComponentModel.ISupportInitialize)mTrack).BeginInit();
             ((System.ComponentModel.ISupportInitialize)zTrack).BeginInit();
             panel1.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)reflektorM).BeginInit();
             SuspendLayout();
             // 
             // drawControlPtsCheck
@@ -395,7 +404,7 @@
             label10.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label10.AutoSize = true;
             label10.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label10.Location = new Point(1088, 353);
+            label10.Location = new Point(1088, 434);
             label10.Name = "label10";
             label10.Size = new Size(100, 20);
             label10.TabIndex = 30;
@@ -404,7 +413,7 @@
             // pickLightColorBtn
             // 
             pickLightColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pickLightColorBtn.Location = new Point(1225, 379);
+            pickLightColorBtn.Location = new Point(1225, 460);
             pickLightColorBtn.Name = "pickLightColorBtn";
             pickLightColorBtn.Size = new Size(66, 36);
             pickLightColorBtn.TabIndex = 31;
@@ -417,7 +426,7 @@
             lightColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lightColorPanel.BackColor = Color.White;
             lightColorPanel.BorderStyle = BorderStyle.FixedSingle;
-            lightColorPanel.Location = new Point(1106, 379);
+            lightColorPanel.Location = new Point(1106, 460);
             lightColorPanel.Name = "lightColorPanel";
             lightColorPanel.Size = new Size(83, 36);
             lightColorPanel.TabIndex = 32;
@@ -427,7 +436,7 @@
             label11.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label11.AutoSize = true;
             label11.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label11.Location = new Point(1088, 428);
+            label11.Location = new Point(3, 434);
             label11.Name = "label11";
             label11.Size = new Size(104, 20);
             label11.TabIndex = 33;
@@ -437,7 +446,7 @@
             // 
             solidColorRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             solidColorRBtn.AutoSize = true;
-            solidColorRBtn.Location = new Point(1097, 451);
+            solidColorRBtn.Location = new Point(12, 457);
             solidColorRBtn.Name = "solidColorRBtn";
             solidColorRBtn.Size = new Size(100, 24);
             solidColorRBtn.TabIndex = 34;
@@ -450,7 +459,7 @@
             textureRBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textureRBtn.AutoSize = true;
             textureRBtn.Checked = true;
-            textureRBtn.Location = new Point(1097, 523);
+            textureRBtn.Location = new Point(12, 529);
             textureRBtn.Name = "textureRBtn";
             textureRBtn.Size = new Size(84, 24);
             textureRBtn.TabIndex = 35;
@@ -464,7 +473,7 @@
             objectColorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             objectColorPanel.BackColor = Color.Purple;
             objectColorPanel.BorderStyle = BorderStyle.FixedSingle;
-            objectColorPanel.Location = new Point(1105, 481);
+            objectColorPanel.Location = new Point(20, 487);
             objectColorPanel.Name = "objectColorPanel";
             objectColorPanel.Size = new Size(83, 36);
             objectColorPanel.TabIndex = 36;
@@ -472,7 +481,7 @@
             // pickObjectColorBtn
             // 
             pickObjectColorBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pickObjectColorBtn.Location = new Point(1225, 481);
+            pickObjectColorBtn.Location = new Point(140, 487);
             pickObjectColorBtn.Name = "pickObjectColorBtn";
             pickObjectColorBtn.Size = new Size(66, 36);
             pickObjectColorBtn.TabIndex = 37;
@@ -484,7 +493,7 @@
             // 
             texturePathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             texturePathLabel.AutoEllipsis = true;
-            texturePathLabel.Location = new Point(1106, 570);
+            texturePathLabel.Location = new Point(17, 576);
             texturePathLabel.Name = "texturePathLabel";
             texturePathLabel.RightToLeft = RightToLeft.No;
             texturePathLabel.Size = new Size(189, 25);
@@ -497,7 +506,7 @@
             label13.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label13.AutoSize = true;
             label13.Font = new Font("Segoe UI Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label13.Location = new Point(1105, 550);
+            label13.Location = new Point(20, 556);
             label13.Name = "label13";
             label13.Size = new Size(87, 20);
             label13.TabIndex = 39;
@@ -506,7 +515,7 @@
             // textureFileBtn
             // 
             textureFileBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textureFileBtn.Location = new Point(1127, 598);
+            textureFileBtn.Location = new Point(42, 604);
             textureFileBtn.Name = "textureFileBtn";
             textureFileBtn.Size = new Size(137, 29);
             textureFileBtn.TabIndex = 38;
@@ -610,7 +619,7 @@
             // drawLightPosCheck
             // 
             drawLightPosCheck.AutoSize = true;
-            drawLightPosCheck.Location = new Point(1094, 326);
+            drawLightPosCheck.Location = new Point(1097, 359);
             drawLightPosCheck.Name = "drawLightPosCheck";
             drawLightPosCheck.Size = new Size(170, 24);
             drawLightPosCheck.TabIndex = 48;
@@ -618,26 +627,108 @@
             drawLightPosCheck.UseVisualStyleBackColor = true;
             drawLightPosCheck.CheckedChanged += drawLightPosCheck_CheckedChanged;
             // 
+            // lightAnimationCheck
+            // 
+            lightAnimationCheck.AutoSize = true;
+            lightAnimationCheck.Location = new Point(1097, 329);
+            lightAnimationCheck.Name = "lightAnimationCheck";
+            lightAnimationCheck.Size = new Size(143, 24);
+            lightAnimationCheck.TabIndex = 49;
+            lightAnimationCheck.Text = "Animacja swiatla";
+            lightAnimationCheck.UseVisualStyleBackColor = true;
+            lightAnimationCheck.CheckedChanged += lightAnimationCheck_CheckedChanged;
+            // 
+            // falowanieCheck
+            // 
+            falowanieCheck.AutoSize = true;
+            falowanieCheck.Location = new Point(1097, 389);
+            falowanieCheck.Name = "falowanieCheck";
+            falowanieCheck.Size = new Size(162, 24);
+            falowanieCheck.TabIndex = 50;
+            falowanieCheck.Text = "Animacja falowania";
+            falowanieCheck.UseVisualStyleBackColor = true;
+            falowanieCheck.CheckedChanged += falowanieCheck_CheckedChanged;
+            // 
+            // punktoweRadio
+            // 
+            punktoweRadio.AutoSize = true;
+            punktoweRadio.Checked = true;
+            punktoweRadio.Location = new Point(9, 26);
+            punktoweRadio.Name = "punktoweRadio";
+            punktoweRadio.Size = new Size(148, 24);
+            punktoweRadio.TabIndex = 51;
+            punktoweRadio.TabStop = true;
+            punktoweRadio.Text = "Swiatlo punktowe";
+            punktoweRadio.UseVisualStyleBackColor = true;
+            punktoweRadio.CheckedChanged += punktoweRadio_CheckedChanged;
+            // 
+            // reflektorRadio
+            // 
+            reflektorRadio.AutoSize = true;
+            reflektorRadio.Location = new Point(9, 56);
+            reflektorRadio.Name = "reflektorRadio";
+            reflektorRadio.Size = new Size(90, 24);
+            reflektorRadio.TabIndex = 52;
+            reflektorRadio.Text = "Reflektor";
+            reflektorRadio.UseVisualStyleBackColor = true;
+            reflektorRadio.CheckedChanged += reflektorRadio_CheckedChanged;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(reflektorLabel);
+            groupBox1.Controls.Add(reflektorRadio);
+            groupBox1.Controls.Add(punktoweRadio);
+            groupBox1.Location = new Point(1088, 512);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(207, 89);
+            groupBox1.TabIndex = 53;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Rodzaj swiatla";
+            // 
+            // reflektorLabel
+            // 
+            reflektorLabel.AutoSize = true;
+            reflektorLabel.Location = new Point(184, 58);
+            reflektorLabel.Name = "reflektorLabel";
+            reflektorLabel.Size = new Size(17, 20);
+            reflektorLabel.TabIndex = 54;
+            reflektorLabel.Text = "5";
+            // 
+            // reflektorM
+            // 
+            reflektorM.Location = new Point(1088, 607);
+            reflektorM.Maximum = 50;
+            reflektorM.Minimum = 5;
+            reflektorM.Name = "reflektorM";
+            reflektorM.Size = new Size(207, 56);
+            reflektorM.TabIndex = 53;
+            reflektorM.TickStyle = TickStyle.None;
+            reflektorM.Value = 5;
+            reflektorM.Scroll += reflektorM_Scroll;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1307, 753);
+            Controls.Add(falowanieCheck);
+            Controls.Add(groupBox1);
+            Controls.Add(lightAnimationCheck);
             Controls.Add(drawLightPosCheck);
-            Controls.Add(resetLightXYBtn);
-            Controls.Add(label15);
-            Controls.Add(normalVecPathLabel);
-            Controls.Add(label14);
-            Controls.Add(normalVecFileBtn);
-            Controls.Add(modifyNormalVecCheck);
-            Controls.Add(texturePathLabel);
-            Controls.Add(label13);
-            Controls.Add(textureFileBtn);
-            Controls.Add(pickObjectColorBtn);
-            Controls.Add(objectColorPanel);
-            Controls.Add(textureRBtn);
-            Controls.Add(solidColorRBtn);
             Controls.Add(label11);
+            Controls.Add(solidColorRBtn);
+            Controls.Add(resetLightXYBtn);
+            Controls.Add(textureRBtn);
+            Controls.Add(label15);
+            Controls.Add(objectColorPanel);
+            Controls.Add(normalVecPathLabel);
+            Controls.Add(pickObjectColorBtn);
+            Controls.Add(label14);
+            Controls.Add(textureFileBtn);
+            Controls.Add(normalVecFileBtn);
+            Controls.Add(texturePathLabel);
+            Controls.Add(modifyNormalVecCheck);
+            Controls.Add(label13);
             Controls.Add(lightColorPanel);
             Controls.Add(pickLightColorBtn);
             Controls.Add(label10);
@@ -671,6 +762,7 @@
             Controls.Add(drawControlPtsCheck);
             Controls.Add(netPrecisionTrack);
             Controls.Add(panel1);
+            Controls.Add(reflektorM);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Form1";
@@ -686,6 +778,9 @@
             ((System.ComponentModel.ISupportInitialize)zTrack).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)reflektorM).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -740,5 +835,12 @@
         private DoubleBufferedPanel panel1;
         private CheckBox drawLightPosCheck;
         private Label isDrawing;
+        private CheckBox lightAnimationCheck;
+        private CheckBox falowanieCheck;
+        private RadioButton punktoweRadio;
+        private RadioButton reflektorRadio;
+        private GroupBox groupBox1;
+        private Label reflektorLabel;
+        private TrackBar reflektorM;
     }
 }

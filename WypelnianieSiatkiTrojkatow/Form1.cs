@@ -16,7 +16,7 @@ namespace WypelnianieSiatkiTrojkatow
 {
     public partial class Form1 : Form
     {
-        private const string DEFAULT_PTS = "Resources\\Points\\punkty2.txt";
+        private const string DEFAULT_PTS = "Resources\\Points\\punkty4_prawiePlaskie_falowanie.txt";
         private const string DEFAULT_TEXTURE = "Resources\\Textures\\154.jpg";
         private const string DEFAULT_NORMAL_VEC = "Resources\\NormalVectors\\154_norm.jpg";
 
@@ -48,7 +48,8 @@ namespace WypelnianieSiatkiTrojkatow
 
             model = new Model(DEFAULT_PTS, netPrecisionTrack.Value,
                 alfaAngleTrack.Value, betaAngleTrack.Value,
-                zTrack.Value, animationBw_ProgressChanged);
+                zTrack.Value, animationBw_ProgressChanged,
+                lightAnimationCheck.Checked, falowanieCheck.Checked);
 
             drawingParams = new DrawingParams(ReadKd(), ReadKs(),
                 mTrack.Value,
@@ -59,7 +60,9 @@ namespace WypelnianieSiatkiTrojkatow
                 modifyNormalVecCheck.Checked,
                 drawTriangleNetCheck.Checked,
                 drawControlPtsCheck.Checked,
-                drawLightPosCheck.Checked);
+                drawLightPosCheck.Checked,
+                reflektorRadio.Checked,
+                reflektorM.Value);
 
             LoadTexture(DEFAULT_TEXTURE);
             LoadNormalVectors(DEFAULT_NORMAL_VEC);
@@ -85,6 +88,7 @@ namespace WypelnianieSiatkiTrojkatow
             texturePathLabel.Text = DEFAULT_TEXTURE.Split('\\')[2];
             normalVecPathLabel.Text = DEFAULT_NORMAL_VEC.Split('\\')[2];
             PauseResumeBtn.Text = "Resume";
+            reflektorLabel.Text = reflektorM.Value.ToString();
         }
 
         #region Drawing
@@ -176,7 +180,15 @@ namespace WypelnianieSiatkiTrojkatow
 
         #region Animation
 
-        private void animationBw_ProgressChanged(object sender, ProgressChangedEventArgs e) => Draw();
+        private void animationBw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (model.isControlPtsAnimation)
+            {
+                model.LoadMesh(netPrecisionTrack.Value);
+                model.RotateVertexes();
+            }
+            Draw();
+        }
 
         #endregion
 
@@ -262,9 +274,20 @@ namespace WypelnianieSiatkiTrojkatow
             Draw();
         }
 
+        private void lightAnimationCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            model.isLightAnimation = lightAnimationCheck.Checked;
+        }
+
+        private void falowanieCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            model.isControlPtsAnimation = falowanieCheck.Checked;
+        }
+
         private void netPrecisionTrack_Scroll(object sender, EventArgs e)
         {
             netPrecValue.Text = netPrecisionTrack.Value.ToString();
+            model.netP = netPrecisionTrack.Value;
             model.LoadMesh(netPrecisionTrack.Value);
             model.RotateVertexes();
             Draw();
@@ -488,5 +511,23 @@ namespace WypelnianieSiatkiTrojkatow
 
         #endregion
 
+        private void punktoweRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            drawingParams.isDrawLightReflektor = reflektorRadio.Checked;
+            Draw();
+        }
+
+        private void reflektorRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            drawingParams.isDrawLightReflektor = reflektorRadio.Checked;
+            Draw();
+        }
+
+        private void reflektorM_Scroll(object sender, EventArgs e)
+        {
+            reflektorLabel.Text = reflektorM.Value.ToString();
+            drawingParams.reflektorM = reflektorM.Value;
+            Draw();
+        }
     }
 }

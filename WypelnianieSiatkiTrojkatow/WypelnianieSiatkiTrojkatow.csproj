@@ -55,13 +55,13 @@
     <None Update="Resources\Points\punkty3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Points\punkty2.txt">
+    <None Update="Resources\Points\punkty2_wypukle.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Points\punkty1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Points\punkty4.txt">
+    <None Update="Resources\Points\punkty4_prawiePlaskie_falowanie.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Textures\154.jpg">

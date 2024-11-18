@@ -137,7 +137,6 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                 IO = new Vector3(c.R, c.G, c.B) / 255F;
             }
 
-            Vector3 IL = drawingParams.lightColor;
             Vector3 V = new Vector3(0F, 0F, 1F);
             Vector3 N = Vector3.Normalize(poly.GetNVector(u, v, w));
             if (drawingParams.isModifyNormalVec)
@@ -168,12 +167,15 @@ namespace WypelnianieSiatkiTrojkatow.Utils
                     );
             }
             Vector3 I = new Vector3(0, 0, 0);
-
+            // przygotowane na pare zrodel swiatla
             for (int i = 0; i < model.lightPos.Count; i++)
             {
                 Vector3 pos = model.lightPos[i];
                 Vector3 L = Vector3.Normalize(pos - new Vector3(x, y, z));
                 Vector3 R = Vector3.Normalize(2 * Vector3.Dot(N, L) * N - L);
+                Vector3 IL = drawingParams.lightColor;
+                if (drawingParams.isDrawLightReflektor)
+                    IL *= (float)Math.Pow(Vector3.Dot(L, Vector3.Normalize(pos)), drawingParams.reflektorM);
 
                 float cosNL = Vector3.Dot(N, L);
                 float cosVR = Vector3.Dot(V, R);
@@ -183,9 +185,9 @@ namespace WypelnianieSiatkiTrojkatow.Utils
             }
 
             return Color.FromArgb(
-                I.X <= 1 ? (int)(I.X * 255) : 255,
-                I.Y <= 1 ? (int)(I.Y * 255) : 255,
-                I.Z <= 1 ? (int)(I.Z * 255) : 255
+                Math.Clamp((int)(I.X * 255), 0, 255),
+                Math.Clamp((int)(I.Y * 255), 0, 255),
+                Math.Clamp((int)(I.Z * 255), 0, 255)
                 );
         }
 

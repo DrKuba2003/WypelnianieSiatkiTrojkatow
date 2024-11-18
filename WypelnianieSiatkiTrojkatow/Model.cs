@@ -13,6 +13,7 @@ namespace WypelnianieSiatkiTrojkatow
     public class Model
     {
         public Vertex[,] ControlVertexes = new Vertex[4, 4];
+        public Vector3[,] ControlVertexesOriginal = new Vector3[4, 4];
         public Vertex[,]? PrecisionVertexes;
         public List<Triangle> Mesh = new();
         public List<Vector3> lightPos;
@@ -24,12 +25,18 @@ namespace WypelnianieSiatkiTrojkatow
         private bool isAnimationRunnig = false;
         private BackgroundWorker animationBW;
 
+        public bool isLightAnimation {  get; set; }
+        public bool isControlPtsAnimation {  get; set; }
+        public int netP;
+
 
         public Model(string path, int netP, int alfa, int beta, int lightZ,
-            ProgressChangedEventHandler animationBw_ProgressChanged)
+            ProgressChangedEventHandler animationBw_ProgressChanged,
+            bool isLightAnimation, bool isControlPtsAnimation)
         {
             this.alfa = alfa;
             this.beta = beta;
+            this.netP = netP;
 
             CalculateModel(path, netP);
 
@@ -44,29 +51,60 @@ namespace WypelnianieSiatkiTrojkatow
             animationBW.ProgressChanged += animationBw_ProgressChanged;
             animationBW.WorkerReportsProgress = true;
             animationBW.WorkerSupportsCancellation = true;
-
+            this.isLightAnimation = isLightAnimation;
+            this.isControlPtsAnimation = isControlPtsAnimation;
         }
         private void animation_DoWork(Object sender, DoWorkEventArgs e)
         {
             double angleSpeed = 6,
                  rSpeed = 0.1;
 
+            int t = 1;
             while (!animationBW.CancellationPending && isAnimationRunnig)
             {
-                angles = (angles + angleSpeed) % 360;
-                radiuss += rSpeed;
-
-                for (int i = 0; i < lightPos.Count; i++) 
+                if (isLightAnimation)
                 {
-                    Vector3 pos = lightPos[i];
-                    double a = angles + (i / (float)lightPos.Count) * 360;
-                    pos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(a)));
-                    pos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(a)));
-                    lightPos[i] = pos;
+                    angles = (angles + angleSpeed) % 360;
+                    radiuss += rSpeed;
+
+                    for (int i = 0; i < lightPos.Count; i++)
+                    {
+                        Vector3 pos = lightPos[i];
+                        double a = angles + (i / (float)lightPos.Count) * 360;
+                        pos.X = (float)(radiuss * Math.Cos(MathUtil.ToRadians(a)));
+                        pos.Y = (float)(radiuss * Math.Sin(MathUtil.ToRadians(a)));
+                        lightPos[i] = pos;
+                    }
                 }
 
-                animationBW.ReportProgress(0);
+                if (isControlPtsAnimation)
+                {
+                    for (int j = 0; j < 4; j++) 
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if ((j + i)%2==0)
+                            {
+                                ControlVertexes[j, i] = new Vertex(new Vector3(
+                                    ControlVertexesOriginal[j, i].X,
+                                    ControlVertexesOriginal[j, i].Y,
+                                    (float)(ControlVertexesOriginal[j, i].Z * ((Math.Sin(t / 5F) + 2)/2) )
+                                    ));
+                            }
+                            else
+                            {
+                                ControlVertexes[j, i] = new Vertex(new Vector3(
+                                    ControlVertexesOriginal[j, i].X,
+                                    ControlVertexesOriginal[j, i].Y,
+                                    (float)(ControlVertexesOriginal[j, i].Z * (((1-Math.Sin(t / 5F)) + 2)/2) )
+                                    ));
+                            }
+                        }
+                }
+
+                if (isLightAnimation || isControlPtsAnimation) 
+                    animationBW.ReportProgress(0);
                 Thread.Sleep(200);
+                t++;
             }
         }
 
@@ -145,13 +183,15 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void LoadControlPts(string path)
         {
-            Array.Clear(ControlVertexes);
+            Array.Clear(ControlVertexes); 
+            ControlVertexesOriginal = new Vector3[4, 4];
 
             int i = 0;
             foreach (string line in File.ReadLines(path))
             {
                 var values = Array.ConvertAll<string, float>(line.Split(), float.Parse);
                 ControlVertexes[i / 4, i % 4] = new Vertex(new Vector3(values));
+                ControlVertexesOriginal[i / 4, i % 4] = new Vector3(values);
                 i++;
             }
         }
@@ -175,6 +215,7 @@ namespace WypelnianieSiatkiTrojkatow
 
         public void CalculateModel(string path, int netP)
         {
+            this.netP = netP;
             LoadControlPts(path);
             LoadMesh(netP);
             RotateVertexes();

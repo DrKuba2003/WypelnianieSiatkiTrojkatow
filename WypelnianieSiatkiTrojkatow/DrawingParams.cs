@@ -28,11 +28,14 @@ namespace WypelnianieSiatkiTrojkatow
         public bool isDrawMesh { get; set; }
         public bool isDrawControlPts { get; set; }
         public bool isDrawLightPos { get; set; }
+        public bool isDrawLightReflektor { get; set; }
+        public int reflektorM { get; set; }
 
         public DrawingParams(float kd, float ks, int m,
             Vector3 objectColor, Vector3 lightColor,
             bool isDrawFilling, bool isSolidColor, bool isModifyNormalVec,
-            bool isDrawMesh, bool isDrawControlPts, bool isDrawLightPos)
+            bool isDrawMesh, bool isDrawControlPts, bool isDrawLightPos,
+            bool isDrawLightReflektor, int reflektorM)
         {
             this.kd = kd;
             this.ks = ks;
@@ -45,6 +48,8 @@ namespace WypelnianieSiatkiTrojkatow
             this.isDrawMesh = isDrawMesh;
             this.isDrawControlPts = isDrawControlPts;
             this.isDrawLightPos = isDrawLightPos;
+            this.isDrawLightReflektor = isDrawLightReflektor;
+            this.reflektorM = reflektorM;
         }
     }
 }
